@@ -1,0 +1,106 @@
+package io.kestra.plugin.apify.dataset;
+
+import io.kestra.core.exceptions.IllegalVariableEvaluationException;
+import io.kestra.core.models.annotations.Plugin;
+import io.kestra.core.models.property.Property;
+import io.kestra.core.models.tasks.RunnableTask;
+import io.kestra.core.runners.RunContext;
+import io.kestra.plugin.apify.DataSetFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
+@SuperBuilder
+@ToString
+@EqualsAndHashCode
+@Getter
+@NoArgsConstructor
+@Schema(
+    title = "Get Unstructured Dataset",
+    description = "Get Unstructured Dataset by ID"
+)
+@Plugin()
+public class GetDataSetRaw extends GetDataSet implements RunnableTask<GetDataSetRaw.Output> {
+    @Schema(
+        title = "format",
+        description = "The format of the dataset. Defaults to `JSON`."
+    )
+    private Property<DataSetFormat> format;
+
+    @Schema(
+        title = "delimiter",
+        description = "A delimiter character for CSV files, only used if format=csv."
+    )
+    private Property<String> delimiter;
+
+    @Schema(
+        title = "bom",
+        description = "All text responses are encoded in UTF-8 encoding. By default, the format=csv files are " +
+            "prefixed with the UTF-8 Byte Order Mark (BOM), while json, jsonl, xml, html and rss files are not." +
+            "If you want to override this default behavior, specify bom=1 to include the BOM or bom=0 " +
+            "to skip it. By default this value is not included in request made to the Apify API."
+    )
+    private Property<Boolean> bom;
+
+    @Schema(
+        title = "xmlRoot",
+        description = "Overrides default root element name of xml output. By default the root element is items."
+    )
+    private Property<String> xmlRoot;
+
+    @Schema(
+        title = "xmlRow",
+        description = "Overrides default element name that wraps each page or page function result object in xml output. By default the element name is item."
+    )
+    private Property<String> xmlRow;
+
+    @Schema(
+        title = "skipHeaderRow",
+        description = "If true then header row in the csv format is skipped. Default value false."
+    )
+    private Property<Boolean> skipHeaderRow;
+
+    @Override
+    public Output run(RunContext runContext) throws Exception {
+        String url = this.buildURL(runContext);
+
+
+        CompletableFuture<URI> path = this.makeCallAndWriteToFile(runContext, this.buildGetRequest(url));
+        return new Output(path.get());
+    }
+
+    @Override
+    public String buildURL(RunContext runContext) throws IllegalVariableEvaluationException {
+        DataSetFormat format = runContext.render(this.format).as(DataSetFormat.class).orElse(DataSetFormat.JSON);
+        String delimiter = runContext.render(this.delimiter).as(String.class).orElse(",");
+        String xmlRoot = runContext.render(this.xmlRoot).as(String.class).orElse("items");
+        String xmlRow = runContext.render(this.xmlRow).as(String.class).orElse("item");
+        Boolean skipHeaderRow = runContext.render(this.skipHeaderRow).as(Boolean.class).orElse(false);
+        Optional<Boolean> bom = runContext.render(this.bom).as(Boolean.class);
+
+        String baseUrl = super.buildURL(runContext);
+        final Map<String, Object> queryParamValues = new HashMap<>();
+
+        queryParamValues.put("format", format);
+        queryParamValues.put("delimiter", delimiter);
+        queryParamValues.put("xmlRoot", xmlRoot);
+        queryParamValues.put("xmlRow", xmlRow);
+        queryParamValues.put("skipHeaderRow", skipHeaderRow);
+
+        bom.ifPresent(b -> queryParamValues.put("bom", b));
+
+        return addQueryParams(baseUrl + "&", queryParamValues);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class Output implements io.kestra.core.models.tasks.Output {
+        private URI path;
+    }
+}
