@@ -59,7 +59,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     /**
      * Makes an HTTP call to the Apify API with proper error handling
      */
-    public <T> T makeCallAndWriteToFile(RunContext runContext, HttpRequest.HttpRequestBuilder requestBuilder, Class<T> responseType) throws Exception {
+    public <T> T makeCall(RunContext runContext, HttpRequest.HttpRequestBuilder requestBuilder, Class<T> responseType) throws Exception {
         var logger = runContext.logger();
 
         try (HttpClient client = new HttpClient(runContext, options)) {

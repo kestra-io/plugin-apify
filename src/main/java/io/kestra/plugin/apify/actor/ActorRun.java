@@ -1,5 +1,6 @@
 package io.kestra.plugin.apify.actor;
 
+import io.kestra.core.models.tasks.Output;
 import io.kestra.plugin.apify.actor.pricinginfo.CommonActorPricingInfo;
 import lombok.Data;
 
@@ -7,7 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Data
-public class ActorRun extends ActorRunListItem {
+public class ActorRun extends ActorRunListItem implements Output {
     String userId;
     String statusMessage;
     ActorRunStats stats;

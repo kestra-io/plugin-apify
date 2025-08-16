@@ -69,7 +69,7 @@ public class GetStructuredDataset extends GetDataSet implements RunnableTask<Get
         HttpRequest.HttpRequestBuilder requestBuilder = this.buildGetRequest(
             this.buildURL(runContext)
         );
-        List<?> dataset = this.makeCallAndWriteToFile(runContext, requestBuilder, List.class);
+        List<?> dataset = this.makeCall(runContext, requestBuilder, List.class);
         return new Output(dataset);
     }
 
