@@ -11,6 +11,6 @@ public class ActorRunMeta {
     private String userAgent;
 
     public Optional<String> getClientIp() {
-        return Optional.of(clientIp);
+        return Optional.ofNullable(clientIp);
     }
 }

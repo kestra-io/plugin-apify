@@ -13,10 +13,10 @@ public class ActorChargeEvent {
     String eventDescription;
 
     public Optional<Double> getEventPriceUsd() {
-        return Optional.of(eventPriceUsd);
+        return Optional.ofNullable(eventPriceUsd);
     }
 
     public Optional<String> getEventDescription() {
-        return Optional.of(eventDescription);
+        return Optional.ofNullable(eventDescription);
     }
 }

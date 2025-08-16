@@ -10,6 +10,6 @@ public class PricePerEventActorPricingInfo extends CommonActorPricingInfo {
     private Double minimalMaxTotalChargeUsd;
 
     public Optional<Double> getMinimalMaxTotalChargeUsd() {
-        return Optional.of(minimalMaxTotalChargeUsd);
+        return Optional.ofNullable(minimalMaxTotalChargeUsd);
     }
 }

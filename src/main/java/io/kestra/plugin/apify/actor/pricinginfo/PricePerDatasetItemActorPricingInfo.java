@@ -10,6 +10,6 @@ public class PricePerDatasetItemActorPricingInfo extends CommonActorPricingInfo 
     private Double pricePerUnitUsd;
 
     public Optional<String> getUnitName() {
-        return Optional.of(unitName);
+        return Optional.ofNullable(unitName);
     }
 }

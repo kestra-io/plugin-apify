@@ -10,6 +10,6 @@ public class ActorRunOptions {
     private Double maxTotalChargeUsd;
 
     public Optional<Double> getMaxTotalChargeUsd() {
-        return Optional.of(maxTotalChargeUsd);
+        return Optional.ofNullable(maxTotalChargeUsd);
     }
 }

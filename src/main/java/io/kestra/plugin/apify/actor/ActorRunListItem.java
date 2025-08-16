@@ -21,10 +21,10 @@ public abstract class ActorRunListItem {
     private String usageTotalUsd;
 
     Optional<String> getActorTaskId() {
-        return Optional.of(actorTaskId);
+        return Optional.ofNullable(actorTaskId);
     }
 
     Optional<String> getBuildId() {
-        return Optional.of(buildId);
+        return Optional.ofNullable(buildId);
     }
 }
