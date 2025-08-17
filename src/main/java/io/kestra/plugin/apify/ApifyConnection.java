@@ -47,7 +47,6 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     protected final static ObjectMapper mapper = JacksonMapper.ofJson(false);
     private static final String APIFY_API_URL = "https://api.apify.com/v2";
     private static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
-    private static final Logger log = LoggerFactory.getLogger(ApifyConnection.class);
 
     private Property<String> apiToken;
 
