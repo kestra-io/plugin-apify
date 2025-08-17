@@ -136,7 +136,7 @@ public abstract class GetDataSet extends ApifyConnection {
         Optional<String> view = runContext.render(this.view).as(String.class);
         boolean simplified = runContext.render(this.simplified).as(Boolean.class).orElse(false);
 
-        String basePath = String.format("/datasets/%s?", datasetId);
+        String basePath = String.format("/datasets/%s/items", datasetId);
 
         final Map<String, Object> queryParamValues = new HashMap<>();
 

@@ -51,6 +51,6 @@ public class GetLastActorRun extends ApifyConnection implements RunnableTask<Act
         HttpRequest.HttpRequestBuilder requestBuilder = buildGetRequest(
             String.format("acts/%s/runs/last", actorId)
         );
-        return makeCall(runContext, requestBuilder, ActorRunApiResponseWrapper.class).data;
+        return makeCall(runContext, requestBuilder, ActorRunApiResponseWrapper.class).getData();
     }
 }

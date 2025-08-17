@@ -6,6 +6,7 @@ import io.kestra.core.http.HttpRequest;
 import io.kestra.core.http.HttpResponse;
 import io.kestra.core.http.client.HttpClient;
 import io.kestra.core.http.client.configurations.HttpConfiguration;
+import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.Task;
 import io.kestra.core.runners.RunContext;
@@ -16,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,10 +38,16 @@ import static java.util.stream.Collectors.joining;
 @EqualsAndHashCode
 @Getter
 @NoArgsConstructor
+@Schema(
+    title = "Run Actor",
+    description = "Run Actor for given Actor ID"
+)
+@Plugin()
 public abstract class ApifyConnection extends Task implements ApifyConnectionInterface {
     protected final static ObjectMapper mapper = JacksonMapper.ofJson(false);
     private static final String APIFY_API_URL = "https://api.apify.com/v2";
     private static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
+    private static final Logger log = LoggerFactory.getLogger(ApifyConnection.class);
 
     private Property<String> apiToken;
 
@@ -50,10 +59,13 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
         return overrideUrl != null ? overrideUrl : APIFY_API_URL;
     }
 
-    protected String addQueryParams(String basePath, Map<String, Object> queryParams) {
-        return queryParams.keySet().stream()
-            .map(key -> key + "=" + encodeValue(queryParams.get(key).toString()))
-            .collect(joining("&", basePath, ""));
+    protected String addQueryParams(String basePath, Map<String, ?> queryParams) {
+        StringBuilder urlBuilder = new StringBuilder(basePath);
+        queryParams.forEach((key, value) -> {
+            urlBuilder.append(urlBuilder.indexOf("?") == -1 ? "?" : "&");
+            urlBuilder.append(key).append("=").append(value);
+        });
+        return urlBuilder.toString();
     }
 
     /**
