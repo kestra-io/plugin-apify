@@ -23,7 +23,7 @@ import java.util.Optional;
 @EqualsAndHashCode
 @Getter
 @NoArgsConstructor
-public abstract class GetDataSet extends ApifyConnection {
+public abstract class AbstractGetDataset extends ApifyConnection {
     @Schema(
         title = "datasetId"
     )

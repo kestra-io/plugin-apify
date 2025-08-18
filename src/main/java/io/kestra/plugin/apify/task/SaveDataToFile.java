@@ -25,7 +25,7 @@ import java.util.*;
     description = "Get Unstructured Dataset by ID"
 )
 @Plugin()
-public class SaveDataToFile extends GetDataSet implements RunnableTask<SaveDataToFile.Output> {
+public class SaveDataToFile extends AbstractGetDataset implements RunnableTask<SaveDataToFile.Output> {
     private static final Logger log = LoggerFactory.getLogger(SaveDataToFile.class);
     @Schema(
         title = "format",

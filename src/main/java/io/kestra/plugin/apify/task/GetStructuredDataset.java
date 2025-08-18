@@ -64,7 +64,7 @@ import java.util.List;
         )
     }
 )
-public class GetStructuredDataset extends GetDataSet implements RunnableTask<GetStructuredDataset.Output> {
+public class GetStructuredDataset extends AbstractGetDataset implements RunnableTask<GetStructuredDataset.Output> {
     @Override
     public Output run(RunContext runContext) throws Exception {
         Logger log = runContext.logger();
