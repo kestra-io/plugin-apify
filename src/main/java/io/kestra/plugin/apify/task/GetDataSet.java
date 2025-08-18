@@ -1,4 +1,4 @@
-package io.kestra.plugin.apify.dataset;
+package io.kestra.plugin.apify.task;
 
 import io.kestra.core.exceptions.IllegalVariableEvaluationException;
 import io.kestra.core.models.property.Property;

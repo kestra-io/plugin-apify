@@ -1,7 +1,7 @@
 package io.kestra.plugin.apify;
 
 import io.kestra.core.models.property.Property;
-import io.kestra.plugin.apify.dataset.GetStructuredDataset;
+import io.kestra.plugin.apify.task.GetStructuredDataset;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

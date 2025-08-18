@@ -1,4 +1,4 @@
-package io.kestra.plugin.apify.dataset;
+package io.kestra.plugin.apify.task;
 
 import io.kestra.core.http.HttpRequest;
 import io.kestra.core.models.annotations.Example;
