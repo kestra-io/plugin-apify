@@ -38,7 +38,10 @@ import lombok.experimental.SuperBuilder;
         )
     }
 )
-public class GetLastActorRun extends ApifyConnection implements RunnableTask<ActorRun>  {
+public class GetLastActorRun extends ApifyConnection implements RunnableTask<ActorRun> {
+    @Schema(
+        title = "Actor ID"
+    )
     private Property<String> actorId;
 
 
