@@ -25,8 +25,8 @@ import java.util.*;
     description = "Get Unstructured Dataset by ID"
 )
 @Plugin()
-public class GetDataSetRaw extends GetDataSet implements RunnableTask<GetDataSetRaw.Output> {
-    private static final Logger log = LoggerFactory.getLogger(GetDataSetRaw.class);
+public class SaveDataToFile extends GetDataSet implements RunnableTask<SaveDataToFile.Output> {
+    private static final Logger log = LoggerFactory.getLogger(SaveDataToFile.class);
     @Schema(
         title = "format",
         description = "The format of the dataset. Defaults to `JSON`."
@@ -75,7 +75,7 @@ public class GetDataSetRaw extends GetDataSet implements RunnableTask<GetDataSet
 
         /*
          * It can take several seconds between an actor run finishing and a dataset being fully uploaded.
-         * If the user uses both the ActorRun and GetDataSetRaw task,
+         * If the user uses both the ActorRun and SaveDataToFile task,
          * we need to retry the request if we get an empty response.
          */
         int attempts = 0;

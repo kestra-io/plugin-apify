@@ -1,7 +1,7 @@
 package io.kestra.plugin.apify;
 
 import io.kestra.core.models.property.Property;
-import io.kestra.plugin.apify.task.GetDataSetRaw;
+import io.kestra.plugin.apify.task.SaveDataToFile;
 import io.kestra.plugin.apify.task.GetStructuredDataset;
 import org.junit.jupiter.api.Test;
 
@@ -10,10 +10,10 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
-class GetDataSetRawTest extends AbstractTest {
+class SaveDataToFileTest extends AbstractTest {
     @Test
     void givenOnlyRequiredValuesAreProvided_wheBuildingTheUrl_thenDefaultValueShouldBeSetWhereApplicable() throws Exception {
-        GetDataSetRaw getStructuredDataset = GetDataSetRaw.builder()
+        SaveDataToFile getStructuredDataset = SaveDataToFile.builder()
             .id("TASK_ID")
             .type(GetStructuredDataset.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))
@@ -32,7 +32,7 @@ class GetDataSetRawTest extends AbstractTest {
 
     @Test
     void givenAllValuesAreProvided_wheBuildingTheUrl_thenAllValuesShouldBePopulated() throws Exception {
-        GetDataSetRaw getStructuredDataset = GetDataSetRaw.builder()
+        SaveDataToFile getStructuredDataset = SaveDataToFile.builder()
             .id("TASK_ID")
             .type(GetStructuredDataset.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))
