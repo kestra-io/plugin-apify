@@ -2,7 +2,7 @@ package io.kestra.plugin.apify;
 
 import io.kestra.core.models.property.Property;
 import io.kestra.plugin.apify.task.SaveDataToFile;
-import io.kestra.plugin.apify.task.GetStructuredDataset;
+import io.kestra.plugin.apify.task.GetDataset;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -15,7 +15,7 @@ class SaveDataToFileTest extends AbstractTest {
     void givenOnlyRequiredValuesAreProvided_wheBuildingTheUrl_thenDefaultValueShouldBeSetWhereApplicable() throws Exception {
         SaveDataToFile getStructuredDataset = SaveDataToFile.builder()
             .id("TASK_ID")
-            .type(GetStructuredDataset.class.getName())
+            .type(GetDataset.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))
             .apiToken(Property.ofValue("API_KEY"))
             .build();
@@ -34,7 +34,7 @@ class SaveDataToFileTest extends AbstractTest {
     void givenAllValuesAreProvided_wheBuildingTheUrl_thenAllValuesShouldBePopulated() throws Exception {
         SaveDataToFile getStructuredDataset = SaveDataToFile.builder()
             .id("TASK_ID")
-            .type(GetStructuredDataset.class.getName())
+            .type(GetDataset.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))
             .clean(Property.ofValue(true))
             .offset(Property.ofValue(1))

@@ -30,12 +30,12 @@ import java.util.List;
             title = "Get dataset with id of mecGriFjtDHRNtYOZ.",
             full = true,
             code = """
-                   id: apify_list_runs_flow_required_properties
+                   id: apify_get_dataset_flow_required_properties
                    namespace: company.team
 
                    tasks:
                      - id: list_runs
-                       type: io.kestra.plugin.apify.runs.ListRuns
+                       type: io.kestra.plugin.apify.task.GetDataset
                        apiToken: your_apify_token
                        datasetId: mecGriFjtDHRNtYOZ
                    """
@@ -44,7 +44,7 @@ import java.util.List;
             title = "Get dataset with id of RNtYOZmecGriFjtDH.",
             full = true,
             code = """
-                   id: apify_list_runs_flow_all_properties
+                   id: apify_get_dataset_flow
                    namespace: company.team
 
                    tasks:
@@ -64,7 +64,7 @@ import java.util.List;
         )
     }
 )
-public class GetStructuredDataset extends AbstractGetDataset implements RunnableTask<GetStructuredDataset.Output> {
+public class GetDataset extends AbstractGetDataset implements RunnableTask<GetDataset.Output> {
     @Override
     public Output run(RunContext runContext) throws Exception {
         Logger log = runContext.logger();
@@ -74,7 +74,7 @@ public class GetStructuredDataset extends AbstractGetDataset implements Runnable
 
         /*
          * It can take several seconds between an actor run finishing and a dataset being fully uploaded.
-         * If the user uses both the ActorRun and GetStructuredDataset task,
+         * If the user uses both the ActorRun and GetDataset task,
          * we need to retry the request if we get an empty response.
          */
         int attempts = 1;

@@ -1,7 +1,7 @@
 package io.kestra.plugin.apify;
 
 import io.kestra.core.models.property.Property;
-import io.kestra.plugin.apify.task.GetStructuredDataset;
+import io.kestra.plugin.apify.task.GetDataset;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,9 +13,9 @@ import static org.hamcrest.Matchers.equalTo;
 class GetStructuredDatasetTest extends AbstractTest {
     @Test
     void givenOnlyRequiredValuesAreProvided_wheBuildingTheUrl_thenDefaultValueShouldBeSetWhereApplicable() throws Exception {
-        GetStructuredDataset getStructuredDataset = GetStructuredDataset.builder()
+        GetDataset getStructuredDataset = GetDataset.builder()
             .id("TASK_ID")
-            .type(GetStructuredDataset.class.getName())
+            .type(GetDataset.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))
             .apiToken(Property.ofValue("API_KEY"))
             .build();
@@ -32,9 +32,9 @@ class GetStructuredDatasetTest extends AbstractTest {
 
     @Test
     void givenAllValuesAreProvided_wheBuildingTheUrl_thenAllValuesShouldBePopulated() throws Exception {
-        GetStructuredDataset getStructuredDataset = GetStructuredDataset.builder()
+        GetDataset getStructuredDataset = GetDataset.builder()
             .id("TASK_ID")
-            .type(GetStructuredDataset.class.getName())
+            .type(GetDataset.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))
             .clean(Property.ofValue(true))
             .offset(Property.ofValue(1))
