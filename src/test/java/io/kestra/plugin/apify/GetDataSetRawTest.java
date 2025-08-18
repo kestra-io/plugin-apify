@@ -23,7 +23,7 @@ class GetDataSetRawTest extends AbstractTest {
         // Assert that optional value with default values are set
         String uri = getStructuredDataset.buildURL(runContext(getStructuredDataset));
         assertThat(uri,
-            equalTo("/datasets/DATASET_ID?flatten=false&sortDirection=false&offset=0&simplified=false" +
+            equalTo("/datasets/DATASET_ID/items?flatten=false&sortDirection=false&offset=0&simplified=false" +
                 "&skipEmpty=true&limit=1000&skipHidden=false&datasetId=DATASET_ID&skipFailedPages=false&cleanValue=true" +
                 "&xmlRow=item&delimiter=%2C&format=json&skipHeaderRow=false&xmlRoot=items"
             )
@@ -61,7 +61,7 @@ class GetDataSetRawTest extends AbstractTest {
         String uri = getStructuredDataset.buildURL(runContext(getStructuredDataset));
         // Assert that all values are set
         assertThat(uri,
-            equalTo("/datasets/DATASET_ID?offset=1&skipEmpty=true&skipHidden=true&unwind=postMeta&flatten=true" +
+            equalTo("/datasets/DATASET_ID/items?offset=1&skipEmpty=true&skipHidden=true&unwind=postMeta&flatten=true" +
                 "&sortDirection=false&view=DUMMY_VIEW_VALUE&simplified=true&limit=10&datasetId=DATASET_ID" +
                 "&fields=userId%2C%23id%2C%23createdAt%2CpostMeta&omit=%23id&skipFailedPages=true&cleanValue=true" +
                 "&bom=true&xmlRow=xmlRow&delimiter=%2C+&format=csv&skipHeaderRow=true&xmlRoot=xmlRoot"

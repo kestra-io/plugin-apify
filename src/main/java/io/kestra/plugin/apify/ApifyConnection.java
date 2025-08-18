@@ -57,7 +57,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
         StringBuilder urlBuilder = new StringBuilder(basePath);
         queryParams.forEach((key, value) -> {
             urlBuilder.append(urlBuilder.indexOf("?") == -1 ? "?" : "&");
-            urlBuilder.append(key).append("=").append(value);
+            urlBuilder.append(key).append("=").append(encodeValue(value.toString()));
         });
         return urlBuilder.toString();
     }

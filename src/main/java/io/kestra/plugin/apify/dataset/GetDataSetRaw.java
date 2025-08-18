@@ -116,7 +116,7 @@ public class GetDataSetRaw extends GetDataSet implements RunnableTask<GetDataSet
 
         bom.ifPresent(b -> queryParamValues.put("bom", b));
 
-        return addQueryParams(baseUrl + "&", queryParamValues);
+        return addQueryParams(baseUrl, queryParamValues);
     }
 
     @Getter
