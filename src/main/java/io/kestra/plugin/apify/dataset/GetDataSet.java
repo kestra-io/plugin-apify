@@ -118,6 +118,11 @@ public abstract class GetDataSet extends ApifyConnection {
     )
     private Property<Boolean> simplified;
 
+    /**
+     * Maximum number of calls that will be made if we keep getting empty dataset responses.
+     */
+    protected static final int MAX_CALL_ATTEMPTS = 3;
+
     public String buildURL(RunContext runContext) throws IllegalVariableEvaluationException {
         String datasetId = runContext.render(this.datasetId).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("datasetId is required")

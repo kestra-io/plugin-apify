@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.slf4j.Logger;
 
 import java.util.List;
 
@@ -66,11 +67,29 @@ import java.util.List;
 public class GetStructuredDataset extends GetDataSet implements RunnableTask<GetStructuredDataset.Output> {
     @Override
     public Output run(RunContext runContext) throws Exception {
+        Logger log = runContext.logger();
         HttpRequest.HttpRequestBuilder requestBuilder = this.buildGetRequest(
             this.buildURL(runContext)
         );
-        List<?> dataset = this.makeCall(runContext, requestBuilder, List.class);
-        return new Output(dataset);
+
+        /*
+         * It can take several seconds between an actor run finishing and a dataset being fully uploaded.
+         * If the user uses both the ActorRun and GetStructuredDataset task,
+         * we need to retry the request if we get an empty response.
+         */
+        int attempts = 1;
+        while (attempts < MAX_CALL_ATTEMPTS) {
+            List<?> dataset = this.makeCall(runContext, requestBuilder, List.class);
+
+            if (!dataset.isEmpty()) {
+                return new Output(dataset);
+            }
+
+            log.debug("Received empty dataset, will retry again in 5000ms");
+            Thread.sleep(5000);
+            attempts++;
+        }
+        throw new IllegalStateException("Failed to get dataset after " + MAX_CALL_ATTEMPTS + " attempts");
     }
 
     public record Output(List<?> dataset) implements io.kestra.core.models.tasks.Output {

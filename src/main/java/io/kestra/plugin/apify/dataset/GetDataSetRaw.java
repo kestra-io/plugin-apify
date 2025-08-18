@@ -9,12 +9,11 @@ import io.kestra.plugin.apify.DataSetFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.io.InputStream;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
+import java.util.*;
 
 @SuperBuilder
 @ToString
@@ -27,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 )
 @Plugin()
 public class GetDataSetRaw extends GetDataSet implements RunnableTask<GetDataSetRaw.Output> {
+    private static final Logger log = LoggerFactory.getLogger(GetDataSetRaw.class);
     @Schema(
         title = "format",
         description = "The format of the dataset. Defaults to `JSON`."
@@ -66,13 +66,34 @@ public class GetDataSetRaw extends GetDataSet implements RunnableTask<GetDataSet
     )
     private Property<Boolean> skipHeaderRow;
 
+    private static final byte[] EMPTY_DATASET_BYTES = "[]".getBytes();
+
     @Override
     public Output run(RunContext runContext) throws Exception {
+        Logger logger = runContext.logger();
         String url = this.buildURL(runContext);
 
+        /*
+         * It can take several seconds between an actor run finishing and a dataset being fully uploaded.
+         * If the user uses both the ActorRun and GetDataSetRaw task,
+         * we need to retry the request if we get an empty response.
+         */
+        int attempts = 0;
+        while (attempts < MAX_CALL_ATTEMPTS) {
+            URI uri = this.makeCallAndWriteToFile(runContext, this.buildGetRequest(url));
 
-        CompletableFuture<URI> path = this.makeCallAndWriteToFile(runContext, this.buildGetRequest(url));
-        return new Output(path.get());
+            try (InputStream inputStream = runContext.storage().getFile(uri)) {
+                byte[] firstTwoChars = inputStream.readNBytes(2);
+                if (!Arrays.equals(firstTwoChars, EMPTY_DATASET_BYTES)) {
+                    return new Output(uri);
+                }
+            }
+
+            logger.debug("Received empty dataset, will retry again in 5000ms");
+            attempts++;
+            Thread.sleep(5000);
+        }
+        throw new IllegalStateException("Failed to get dataset after " + MAX_CALL_ATTEMPTS + " attempts");
     }
 
     @Override

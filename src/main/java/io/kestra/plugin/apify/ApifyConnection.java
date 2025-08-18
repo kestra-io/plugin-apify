@@ -17,9 +17,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -30,8 +27,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-
-import static java.util.stream.Collectors.joining;
 
 @SuperBuilder
 @ToString
@@ -86,7 +81,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
         }
     }
 
-    public CompletableFuture<URI> makeCallAndWriteToFile(RunContext runContext, HttpRequest.HttpRequestBuilder requestBuilder) throws Exception {
+    public URI makeCallAndWriteToFile(RunContext runContext, HttpRequest.HttpRequestBuilder requestBuilder) throws Exception {
         var logger = runContext.logger();
         addAuthorizationHeader(runContext, requestBuilder);
         CompletableFuture<URI> completableFuture = new CompletableFuture<>();
@@ -103,7 +98,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
             }
             throw e;
         }
-        return completableFuture;
+        return completableFuture.get();
     }
 
     private static Consumer<HttpResponse<InputStream>> getWriteHttpResponseToTempFileConsumer(RunContext runContext, CompletableFuture<URI> completableFuture) {
@@ -168,6 +163,13 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     private void addAuthorizationHeader(
         RunContext runContext,
         HttpRequest.HttpRequestBuilder requestBuilder) throws IllegalVariableEvaluationException {
+
+        if (
+            requestBuilder.build().getHeaders() != null
+                && requestBuilder.build().getHeaders().map().containsKey("Authorization")
+        ) {
+            return;
+        }
 
         Optional<String> apiTokenRendered = runContext.render(this.apiToken).as(String.class);
 

@@ -80,9 +80,6 @@ public class RunActor extends ApifyConnection implements RunnableTask<ActorRun> 
         );
 
         Map<String, Object> input = runContext.render(this.input).asMap(String.class, Object.class);
-
-        log.info("Input: {}", input);
-
         Map<String, Optional<?>> queryParams = Map.of(
             "timeout", runContext.render(this.requestTimeout).as(Double.class),
             "memory", runContext.render(this.memory).as(Double.class),
