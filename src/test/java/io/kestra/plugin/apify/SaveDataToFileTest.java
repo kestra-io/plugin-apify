@@ -1,7 +1,7 @@
 package io.kestra.plugin.apify;
 
 import io.kestra.core.models.property.Property;
-import io.kestra.plugin.apify.task.SaveDataToFile;
+import io.kestra.plugin.apify.task.SaveDatasetToFile;
 import io.kestra.plugin.apify.task.GetDataset;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +13,7 @@ import static org.hamcrest.Matchers.equalTo;
 class SaveDataToFileTest extends AbstractTest {
     @Test
     void givenOnlyRequiredValuesAreProvided_wheBuildingTheUrl_thenDefaultValueShouldBeSetWhereApplicable() throws Exception {
-        SaveDataToFile getStructuredDataset = SaveDataToFile.builder()
+        SaveDatasetToFile getStructuredDataset = SaveDatasetToFile.builder()
             .id("TASK_ID")
             .type(GetDataset.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))
@@ -32,7 +32,7 @@ class SaveDataToFileTest extends AbstractTest {
 
     @Test
     void givenAllValuesAreProvided_wheBuildingTheUrl_thenAllValuesShouldBePopulated() throws Exception {
-        SaveDataToFile getStructuredDataset = SaveDataToFile.builder()
+        SaveDatasetToFile getStructuredDataset = SaveDatasetToFile.builder()
             .id("TASK_ID")
             .type(GetDataset.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))

@@ -21,8 +21,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Get Dataset",
-    description = "Get Dataset by ID"
+    title = "Get Dataset"
 )
 @Plugin(
     examples = {
@@ -49,7 +48,7 @@ import java.util.List;
 
                    tasks:
                      - id: list_runs
-                       type: io.kestra.plugin.apify.runs.ListRuns
+                       type: io.kestra.plugin.apify.task.GetDataset
                        apiToken: your_apify_token
                        datasetId: RNtYOZmecGriFjtDH
                        clean: false

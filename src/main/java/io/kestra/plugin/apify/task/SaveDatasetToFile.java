@@ -1,6 +1,7 @@
 package io.kestra.plugin.apify.task;
 
 import io.kestra.core.exceptions.IllegalVariableEvaluationException;
+import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
@@ -21,12 +22,47 @@ import java.util.*;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Get Unstructured Dataset",
-    description = "Get Unstructured Dataset by ID"
+    title = "Save Apify Dataset to File"
 )
-@Plugin()
-public class SaveDataToFile extends AbstractGetDataset implements RunnableTask<SaveDataToFile.Output> {
-    private static final Logger log = LoggerFactory.getLogger(SaveDataToFile.class);
+@Plugin(
+    examples = {
+        @Example(
+            title = "Save dataset with id of mecGriFjtDHRNtYOZ as temp file.",
+            full = true,
+            code = """
+                   id: apify_save_dataset_flow_required_properties
+                   namespace: company.team
+
+                   tasks:
+                     - id: list_runs
+                       type: io.kestra.plugin.apify.task.SaveDatasetToFile
+                       apiToken: your_apify_token
+                       datasetId: mecGriFjtDHRNtYOZ
+                   """
+        ),
+        @Example(
+            title = "Save dataset with id of RNtYOZmecGriFjtDH as temp file.",
+            full = true,
+            code = """
+                   id: save_data_set_to_csv_file
+                   namespace: company.team
+
+                   tasks:
+                     - id: list_runs
+                       type: io.kestra.plugin.apify.task.SaveDatasetToFile
+                       apiToken: your_apify_token
+                       datasetId: RNtYOZmecGriFjtDH
+                       format: CSV
+                       fields: userId, #id, #createdAt, postMeta
+                       omit: #id
+                       flatten: postMeta
+                       sort: ASC
+                   """
+        )
+    }
+)
+public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTask<SaveDatasetToFile.Output> {
+    private static final Logger log = LoggerFactory.getLogger(SaveDatasetToFile.class);
     @Schema(
         title = "format",
         description = "The format of the dataset. Defaults to `JSON`."
@@ -75,7 +111,7 @@ public class SaveDataToFile extends AbstractGetDataset implements RunnableTask<S
 
         /*
          * It can take several seconds between an actor run finishing and a dataset being fully uploaded.
-         * If the user uses both the ActorRun and SaveDataToFile task,
+         * If the user uses both the ActorRun and SaveDatasetToFile task,
          * we need to retry the request if we get an empty response.
          */
         int attempts = 0;
