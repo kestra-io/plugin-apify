@@ -22,7 +22,11 @@ import java.util.*;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Save Apify Dataset to File"
+    title = "Save Apify Dataset to File",
+    description = "This task uses short polling to save the dataset from Apify to a temp file. " +
+        "If this tasks received an empty dataset, it will retry the request every 5 seconds until the dataset is " +
+        "available or the tasks timeout limit is reached. When this task receives a empty dataset it is typically " +
+        "because the actor run has not finished uploading the Dataset."
 )
 @Plugin(
     examples = {
@@ -114,8 +118,7 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
          * If the user uses both the ActorRun and SaveDatasetToFile task,
          * we need to retry the request if we get an empty response.
          */
-        int attempts = 0;
-        while (attempts < MAX_CALL_ATTEMPTS) {
+        while (true) {
             URI uri = this.makeCallAndWriteToFile(runContext, this.buildGetRequest(url));
 
             try (InputStream inputStream = runContext.storage().getFile(uri)) {
@@ -126,10 +129,8 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
             }
 
             logger.debug("Received empty dataset, will retry again in 5000ms");
-            attempts++;
             Thread.sleep(5000);
         }
-        throw new IllegalStateException("Failed to get dataset after " + MAX_CALL_ATTEMPTS + " attempts");
     }
 
     @Override

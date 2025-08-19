@@ -21,7 +21,11 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Get Dataset"
+    title = "Get Dataset",
+    description = "This task uses short polling to get the dataset from Apify. " +
+        "If this tasks received an empty dataset, it will retry the request every 5 seconds until the dataset is " +
+        "available or the tasks timeout limit is reached. When this task receives a empty dataset it is typically " +
+        "because the actor run has not finished uploading the Dataset."
 )
 @Plugin(
     examples = {
@@ -76,8 +80,7 @@ public class GetDataset extends AbstractGetDataset implements RunnableTask<GetDa
          * If the user uses both the ActorRun and GetDataset task,
          * we need to retry the request if we get an empty response.
          */
-        int attempts = 1;
-        while (attempts < MAX_CALL_ATTEMPTS) {
+        while (true) {
             List<?> dataset = this.makeCall(runContext, requestBuilder, List.class);
 
             if (!dataset.isEmpty()) {
@@ -86,9 +89,7 @@ public class GetDataset extends AbstractGetDataset implements RunnableTask<GetDa
 
             log.debug("Received empty dataset, will retry again in 5000ms");
             Thread.sleep(5000);
-            attempts++;
         }
-        throw new IllegalStateException("Failed to get dataset after " + MAX_CALL_ATTEMPTS + " attempts");
     }
 
     public record Output(List<?> dataset) implements io.kestra.core.models.tasks.Output {
