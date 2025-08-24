@@ -126,11 +126,11 @@ public class RunActor extends ApifyConnection implements RunnableTask<ActorRun> 
 
     @Override
     public ActorRun run(RunContext runContext) throws Exception {
-        String actorId = runContext.render(this.actorId).as(String.class).orElseThrow(
+        String rActorId = runContext.render(this.actorId).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("actorId is required")
         );
 
-        Map<String, Object> input = runContext.render(this.input).asMap(String.class, Object.class);
+        Map<String, Object> rInput = runContext.render(this.input).asMap(String.class, Object.class);
         Map<String, Optional<?>> queryParams = Map.of(
             "timeout", runContext.render(this.requestTimeout).as(Double.class),
             "memory", runContext.render(this.memory).as(Double.class),
@@ -149,15 +149,13 @@ public class RunActor extends ApifyConnection implements RunnableTask<ActorRun> 
         ));
 
         HttpRequest.HttpRequestBuilder requestBuilder = buildPostRequest(
-            addQueryParams(String.format("acts/%s/runs", actorId), filteredQueryParams),
-            input
+            addQueryParams(String.format("acts/%s/runs", rActorId), filteredQueryParams),
+            rInput
         );
 
 
-        ActorRun actorRun = makeCall(
+        return makeCall(
             runContext, requestBuilder, ActorRunApiResponseWrapper.class
         ).getData();
-
-        return actorRun;
     }
 }

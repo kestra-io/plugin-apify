@@ -8,6 +8,7 @@ import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
 import io.kestra.plugin.apify.ApifyConnection;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -47,12 +48,12 @@ public class GetLastActorRun extends ApifyConnection implements RunnableTask<Act
 
     @Override
     public ActorRun run(RunContext runContext) throws Exception {
-        String actorId = runContext.render(this.actorId).as(String.class).orElseThrow(
+        String rActorId = runContext.render(this.actorId).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("actorId is required")
         );
 
         HttpRequest.HttpRequestBuilder requestBuilder = buildGetRequest(
-            String.format("acts/%s/runs/last", actorId)
+            String.format("acts/%s/runs/last", rActorId)
         );
         return makeCall(runContext, requestBuilder, ActorRunApiResponseWrapper.class).getData();
     }

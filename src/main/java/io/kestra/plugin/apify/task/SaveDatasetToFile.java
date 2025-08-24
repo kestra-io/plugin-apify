@@ -135,23 +135,18 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
 
     @Override
     public String buildURL(RunContext runContext) throws IllegalVariableEvaluationException {
-        DataSetFormat format = runContext.render(this.format).as(DataSetFormat.class).orElse(DataSetFormat.JSON);
-        String delimiter = runContext.render(this.delimiter).as(String.class).orElse(",");
-        String xmlRoot = runContext.render(this.xmlRoot).as(String.class).orElse("items");
-        String xmlRow = runContext.render(this.xmlRow).as(String.class).orElse("item");
-        Boolean skipHeaderRow = runContext.render(this.skipHeaderRow).as(Boolean.class).orElse(false);
-        Optional<Boolean> bom = runContext.render(this.bom).as(Boolean.class);
+        Optional<Boolean> rBom = runContext.render(this.bom).as(Boolean.class);
 
         String baseUrl = super.buildURL(runContext);
-        final Map<String, Object> queryParamValues = new HashMap<>();
+        final Map<String, Object> queryParamValues = new HashMap<>(Map.of(
+            "format", runContext.render(this.format).as(DataSetFormat.class).orElse(DataSetFormat.JSON),
+            "delimiter", runContext.render(this.delimiter).as(String.class).orElse(","),
+            "xmlRoot", runContext.render(this.xmlRoot).as(String.class).orElse("items"),
+            "xmlRow", runContext.render(this.xmlRow).as(String.class).orElse("item"),
+            "skipHeaderRow", runContext.render(this.skipHeaderRow).as(Boolean.class).orElse(false)
+        ));
 
-        queryParamValues.put("format", format);
-        queryParamValues.put("delimiter", delimiter);
-        queryParamValues.put("xmlRoot", xmlRoot);
-        queryParamValues.put("xmlRow", xmlRow);
-        queryParamValues.put("skipHeaderRow", skipHeaderRow);
-
-        bom.ifPresent(b -> queryParamValues.put("bom", b));
+        rBom.ifPresent(b -> queryParamValues.put("bom", b));
 
         return addQueryParams(baseUrl, queryParamValues);
     }

@@ -119,54 +119,43 @@ public abstract class AbstractGetDataset extends ApifyConnection {
     private Property<Boolean> simplified;
 
     public String buildURL(RunContext runContext) throws IllegalVariableEvaluationException {
-        String datasetId = runContext.render(this.datasetId).as(String.class).orElseThrow(
+        String rDatasetId = runContext.render(this.datasetId).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("datasetId is required")
         );
-        boolean cleanValue = runContext.render(this.clean).as(Boolean.class).orElse(true);
-        int offset = runContext.render(this.offset).as(Integer.class).orElse(0);
-        boolean sortDirection = runContext.render(this.sort).as(ApifySortDirection.class).orElse(ApifySortDirection.ASC) == ApifySortDirection.DESC;
-        List<String> unwind = runContext.render(this.unwind).asList(String.class);
-        boolean flatten = runContext.render(this.flatten).as(Boolean.class).orElse(false);
-        boolean skipEmpty = runContext.render(this.skipEmpty).as(Boolean.class).orElse(true);
-        List<String> fields = runContext.render(this.fields).asList(String.class);
-        List<String> omit = runContext.render(this.omit).asList(String.class);
-        Integer limit = runContext.render(this.limit).as(Integer.class).orElse(1000);
-        boolean skipFailedPages = runContext.render(this.skipFailedPages).as(Boolean.class).orElse(false);
-        boolean skipHidden = runContext.render(this.skipHidden).as(Boolean.class).orElse(false);
-        Optional<String> view = runContext.render(this.view).as(String.class);
-        boolean simplified = runContext.render(this.simplified).as(Boolean.class).orElse(false);
 
-        String basePath = String.format("/datasets/%s/items", datasetId);
+        List<String> rUnwind = runContext.render(this.unwind).asList(String.class);
+        List<String> rFields = runContext.render(this.fields).asList(String.class);
+        List<String> rOmit = runContext.render(this.omit).asList(String.class);
+        Optional<String> rView = runContext.render(this.view).as(String.class);
 
-        final Map<String, Object> queryParamValues = new HashMap<>();
+        final Map<String, Object> queryParamValues = Map.of(
+            "cleanValue", runContext.render(this.clean).as(Boolean.class).orElse(true),
+            "offset", runContext.render(this.offset).as(Integer.class).orElse(0),
+            "sortDirection", runContext.render(this.sort).as(ApifySortDirection.class)
+                .orElse(ApifySortDirection.ASC) == ApifySortDirection.DESC,
+            "flatten", runContext.render(this.flatten).as(Boolean.class).orElse(false),
+            "skipEmpty", runContext.render(this.skipEmpty).as(Boolean.class).orElse(true),
+            "limit", runContext.render(this.limit).as(Integer.class).orElse(1000),
+            "simplified", runContext.render(this.simplified).as(Boolean.class).orElse(false),
+            "skipFailedPages", runContext.render(this.skipFailedPages).as(Boolean.class).orElse(false),
+            "skipHidden", runContext.render(this.skipHidden).as(Boolean.class).orElse(false)
+        );
 
-        queryParamValues.put("datasetId", datasetId);
-        queryParamValues.put("cleanValue", cleanValue);
-        queryParamValues.put("offset", offset);
-        queryParamValues.put("sortDirection", sortDirection);
-        queryParamValues.put("flatten", flatten);
-        queryParamValues.put("skipEmpty", skipEmpty);
-        queryParamValues.put("limit", limit);
-        queryParamValues.put("simplified", simplified);
-        queryParamValues.put("skipFailedPages", skipFailedPages);
-        queryParamValues.put("skipHidden", skipHidden);
-
-
-
-        if (!fields.isEmpty()) {
-            queryParamValues.put("fields", String.join(",", fields));
+        if (!rFields.isEmpty()) {
+            queryParamValues.put("fields", String.join(",", rFields));
         }
 
-        if (!omit.isEmpty()) {
-            queryParamValues.put("omit", String.join(", ", omit));
+        if (!rOmit.isEmpty()) {
+            queryParamValues.put("omit", String.join(", ", rOmit));
         }
 
-        if (!unwind.isEmpty()) {
-            queryParamValues.put("unwind", String.join(", ", unwind));
+        if (!rUnwind.isEmpty()) {
+            queryParamValues.put("unwind", String.join(", ", rUnwind));
         }
 
-        view.ifPresent(s -> queryParamValues.put("view", s));
+        rView.ifPresent(s -> queryParamValues.put("view", s));
 
+        String basePath = String.format("/datasets/%s/items", rDatasetId);
         return addQueryParams(basePath, queryParamValues);
     }
 }
