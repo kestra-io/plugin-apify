@@ -43,6 +43,7 @@ public class GetLastActorRun extends ApifyConnection implements RunnableTask<Act
     @Schema(
         title = "Actor ID"
     )
+    @NotNull
     private Property<String> actorId;
 
 
