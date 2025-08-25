@@ -71,13 +71,15 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
         title = "format",
         description = "The format of the dataset. Defaults to `JSON`."
     )
-    private Property<DataSetFormat> format;
+    @Builder.Default
+    private Property<DataSetFormat> format = Property.ofValue(DataSetFormat.JSON);
 
     @Schema(
         title = "delimiter",
         description = "A delimiter character for CSV files, only used if format=csv."
     )
-    private Property<String> delimiter;
+    @Builder.Default
+    private Property<String> delimiter = Property.ofValue(",");
 
     @Schema(
         title = "bom",
@@ -92,19 +94,22 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
         title = "xmlRoot",
         description = "Overrides default root element name of xml output. By default the root element is items."
     )
-    private Property<String> xmlRoot;
+    @Builder.Default
+    private Property<String> xmlRoot = Property.ofValue("items");
 
     @Schema(
         title = "xmlRow",
         description = "Overrides default element name that wraps each page or page function result object in xml output. By default the element name is item."
     )
-    private Property<String> xmlRow;
+    @Builder.Default
+    private Property<String> xmlRow = Property.ofValue("item");
 
     @Schema(
         title = "skipHeaderRow",
         description = "If true then header row in the csv format is skipped. Default value false."
     )
-    private Property<Boolean> skipHeaderRow;
+    @Builder.Default
+    private Property<Boolean> skipHeaderRow = Property.ofValue(false);
 
     private static final byte[] EMPTY_DATASET_BYTES = "[]".getBytes();
 
@@ -139,11 +144,11 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
 
         String baseUrl = super.buildURL(runContext);
         final Map<String, Object> queryParamValues = new HashMap<>(Map.of(
-            "format", runContext.render(this.format).as(DataSetFormat.class).orElse(DataSetFormat.JSON),
-            "delimiter", runContext.render(this.delimiter).as(String.class).orElse(","),
-            "xmlRoot", runContext.render(this.xmlRoot).as(String.class).orElse("items"),
-            "xmlRow", runContext.render(this.xmlRow).as(String.class).orElse("item"),
-            "skipHeaderRow", runContext.render(this.skipHeaderRow).as(Boolean.class).orElse(false)
+            "format", runContext.render(this.format).as(DataSetFormat.class).orElseThrow(),
+            "delimiter", runContext.render(this.delimiter).as(String.class).orElseThrow(),
+            "xmlRoot", runContext.render(this.xmlRoot).as(String.class).orElseThrow(),
+            "xmlRow", runContext.render(this.xmlRow).as(String.class).orElseThrow(),
+            "skipHeaderRow", runContext.render(this.skipHeaderRow).as(Boolean.class).orElseThrow()
         ));
 
         rBom.ifPresent(b -> queryParamValues.put("bom", b));

@@ -7,10 +7,7 @@ import io.kestra.plugin.apify.ApifyConnection;
 import io.kestra.plugin.apify.ApifySortDirection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.HashMap;
@@ -35,19 +32,22 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         title = "Clean",
         description = "If true then the task returns only non-empty items and skips hidden fields (i.e. fields starting with the # character). The default value is true."
     )
-    private Property<Boolean> clean;
+    @Builder.Default
+    private Property<Boolean> clean = Property.ofValue(true);
 
     @Schema(
         title = "Offset",
         description = "Number of items that should be skipped at the start. The default value is 0."
     )
-    private Property<Integer> offset;
+    @Builder.Default
+    private Property<Integer> offset = Property.ofValue(0);
 
     @Schema(
         title = "Limit",
         description = "Maximum number of items to return. By default Limit value is set to 1000."
     )
-    private Property<Integer> limit;
+    @Builder.Default
+    private Property<Integer> limit = Property.ofValue(1000);
 
     @Schema(
         title = "Fields",
@@ -77,25 +77,28 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "List of fields which should transform nested objects into flat structures. For example, with " +
             "flatten=\"foo\" the object {\"foo\":{\"bar\": \"hello\"}} is turned into {\"foo.bar\": \"hello\"}."
     )
-    private Property<Boolean> flatten;
+    @Builder.Default
+    private Property<Boolean> flatten = Property.ofValue(false);
 
     @Schema(
         title = "sort",
         description = "Sort the runs by startedAt in descending order. Defaults to `ASC`."
     )
-    private Property<ApifySortDirection> sort;
+    private Property<ApifySortDirection> sort = Property.ofValue(ApifySortDirection.DESC);
 
     @Schema(
         title = "SkipEmpty",
         description = "If true then empty items are skipped from the output. Default value is true."
     )
-    private Property<Boolean> skipEmpty;
+    @Builder.Default
+    private Property<Boolean> skipEmpty = Property.ofValue(true);
 
     @Schema(
         title = "SkipFailedPages",
         description = "If true then, the all the items with errorInfo property will be skipped from the output. Default value false."
     )
-    private Property<Boolean> skipFailedPages;
+    @Builder.Default
+    private Property<Boolean> skipFailedPages = Property.ofValue(false);
 
     @Schema(
         title = "View",
@@ -109,14 +112,16 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         title = "SkipHidden",
         description = "If true then hidden fields are skipped from the output, i.e. fields starting with the # character."
     )
-    private Property<Boolean> skipHidden;
+    @Builder.Default
+    private Property<Boolean> skipHidden = Property.ofValue(false);
 
 
     @Schema(
         title = "Simplified",
         description = "If true then hidden fields are skipped from the output, i.e. fields starting with the # character."
     )
-    private Property<Boolean> simplified;
+    @Builder.Default
+    private Property<Boolean> simplified = Property.ofValue(false);
 
     public String buildURL(RunContext runContext) throws IllegalVariableEvaluationException {
         String rDatasetId = runContext.render(this.datasetId).as(String.class).orElseThrow(
@@ -128,18 +133,18 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         List<String> rOmit = runContext.render(this.omit).asList(String.class);
         Optional<String> rView = runContext.render(this.view).as(String.class);
 
-        final Map<String, Object> queryParamValues = Map.of(
-            "cleanValue", runContext.render(this.clean).as(Boolean.class).orElse(true),
-            "offset", runContext.render(this.offset).as(Integer.class).orElse(0),
+        final Map<String, Object> queryParamValues = new HashMap<>(Map.of(
+            "cleanValue", runContext.render(this.clean).as(Boolean.class).orElseThrow(),
+            "offset", runContext.render(this.offset).as(Integer.class).orElseThrow(),
             "sortDirection", runContext.render(this.sort).as(ApifySortDirection.class)
-                .orElse(ApifySortDirection.ASC) == ApifySortDirection.DESC,
-            "flatten", runContext.render(this.flatten).as(Boolean.class).orElse(false),
-            "skipEmpty", runContext.render(this.skipEmpty).as(Boolean.class).orElse(true),
-            "limit", runContext.render(this.limit).as(Integer.class).orElse(1000),
-            "simplified", runContext.render(this.simplified).as(Boolean.class).orElse(false),
-            "skipFailedPages", runContext.render(this.skipFailedPages).as(Boolean.class).orElse(false),
-            "skipHidden", runContext.render(this.skipHidden).as(Boolean.class).orElse(false)
-        );
+                .orElseThrow() == ApifySortDirection.DESC,
+            "flatten", runContext.render(this.flatten).as(Boolean.class).orElseThrow(),
+            "skipEmpty", runContext.render(this.skipEmpty).as(Boolean.class).orElseThrow(),
+            "limit", runContext.render(this.limit).as(Integer.class).orElseThrow(),
+            "simplified", runContext.render(this.simplified).as(Boolean.class).orElseThrow(),
+            "skipFailedPages", runContext.render(this.skipFailedPages).as(Boolean.class).orElseThrow(),
+            "skipHidden", runContext.render(this.skipHidden).as(Boolean.class).orElseThrow()
+        ));
 
         if (!rFields.isEmpty()) {
             queryParamValues.put("fields", String.join(",", rFields));
