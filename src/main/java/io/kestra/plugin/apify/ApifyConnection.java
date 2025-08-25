@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -55,7 +56,8 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
 
     protected String addQueryParams(String basePath, Map<String, ?> queryParams) {
         StringBuilder urlBuilder = new StringBuilder(basePath);
-        queryParams.forEach((key, value) -> {
+        Map<String, ?> sortedQueryParams = new TreeMap<>(queryParams);
+        sortedQueryParams.forEach((key, value) -> {
             urlBuilder.append(urlBuilder.indexOf("?") == -1 ? "?" : "&");
             urlBuilder.append(key).append("=").append(encodeValue(value.toString()));
         });

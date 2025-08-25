@@ -84,7 +84,8 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         title = "sort",
         description = "Sort the runs by startedAt in descending order. Defaults to `ASC`."
     )
-    private Property<ApifySortDirection> sort = Property.ofValue(ApifySortDirection.DESC);
+    @Builder.Default
+    private Property<ApifySortDirection> sort = Property.ofValue(ApifySortDirection.ASC);
 
     @Schema(
         title = "SkipEmpty",

@@ -23,9 +23,8 @@ class GetStructuredDatasetTest extends AbstractTest {
         // Assert that optional value with default values are set
         String uri = getStructuredDataset.buildURL(runContext(getStructuredDataset));
         assertThat(uri,
-            equalTo("/datasets/DATASET_ID/items?flatten=false&sortDirection=false&offset=0&simplified=false" +
-                "&skipEmpty=true&limit=1000&skipHidden=false&datasetId=DATASET_ID&skipFailedPages=false" +
-                "&cleanValue=true"
+            equalTo("/datasets/DATASET_ID/items?cleanValue=true&flatten=false&limit=1000&offset=0" +
+                "&simplified=false&skipEmpty=true&skipFailedPages=false&skipHidden=false&sortDirection=false"
             )
         );
     }
@@ -55,9 +54,10 @@ class GetStructuredDatasetTest extends AbstractTest {
         String uri = getStructuredDataset.buildURL(runContext(getStructuredDataset));
         // Assert that all values are set
         assertThat(uri,
-            uri.equals("/datasets/DATASET_ID/items?offset=1&skipEmpty=true&skipHidden=true&unwind=postMeta&flatten=true" +
-                "&sortDirection=false&view=DUMMY_VIEW_VALUE&simplified=true&limit=10&datasetId=DATASET_ID" +
-                "&fields=userId%2C%23id%2C%23createdAt%2CpostMeta&omit=%23id&skipFailedPages=true&cleanValue=true"
+            equalTo("/datasets/DATASET_ID/items?cleanValue=true" +
+                "&fields=userId%2C%23id%2C%23createdAt%2CpostMeta&flatten=true&limit=10&offset=1" +
+                "&omit=%23id&simplified=true&skipEmpty=true&skipFailedPages=true&skipHidden=true&sortDirection=false" +
+                "&unwind=postMeta&view=DUMMY_VIEW_VALUE"
             )
         );
     }
