@@ -1,4 +1,4 @@
-package io.kestra.plugin.apify.actor;
+package io.kestra.plugin.apify.task;
 
 import io.kestra.core.http.HttpRequest;
 import io.kestra.core.models.annotations.Example;
@@ -7,6 +7,8 @@ import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
 import io.kestra.plugin.apify.ApifyConnection;
+import io.kestra.plugin.apify.actor.ActorRun;
+import io.kestra.plugin.apify.actor.ActorRunApiResponseWrapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
