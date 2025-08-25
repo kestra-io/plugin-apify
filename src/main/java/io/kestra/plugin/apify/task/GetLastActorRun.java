@@ -26,7 +26,7 @@ import lombok.experimental.SuperBuilder;
 @Plugin(
     examples = {
         @Example(
-            title = "Get details abut the last actor run for actorId: GdWCkxBtKWOsKjdch.",
+            title = "Get details about the last actor run of given actor id.",
             full = true,
             code = """
                    id: get_last_run

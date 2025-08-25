@@ -30,7 +30,7 @@ import java.util.List;
 @Plugin(
     examples = {
         @Example(
-            title = "Get dataset with id of mecGriFjtDHRNtYOZ.",
+            title = "Get dataset with a given id.",
             full = true,
             code = """
                    id: apify_get_dataset_flow_required_properties
@@ -44,7 +44,7 @@ import java.util.List;
                    """
         ),
         @Example(
-            title = "Get dataset with id of RNtYOZmecGriFjtDH.",
+            title = "Get dataset with a given id and specific options.",
             full = true,
             code = """
                    id: apify_get_dataset_flow

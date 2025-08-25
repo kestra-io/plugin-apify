@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @Plugin(
     examples = {
         @Example(
-            title = "Save dataset with id of mecGriFjtDHRNtYOZ as temp file.",
+            title = "Save dataset with given id as temp file.",
             full = true,
             code = """
                     id: run_actor

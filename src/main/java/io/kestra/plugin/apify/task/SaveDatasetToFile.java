@@ -31,7 +31,7 @@ import java.util.*;
 @Plugin(
     examples = {
         @Example(
-            title = "Save dataset with id of mecGriFjtDHRNtYOZ as temp file.",
+            title = "Save dataset with given id as temp file.",
             full = true,
             code = """
                    id: apify_save_dataset_flow_required_properties
@@ -45,7 +45,7 @@ import java.util.*;
                    """
         ),
         @Example(
-            title = "Save dataset with id of RNtYOZmecGriFjtDH as temp file.",
+            title = "Save dataset with given id as temp file.",
             full = true,
             code = """
                    id: save_data_set_to_csv_file
