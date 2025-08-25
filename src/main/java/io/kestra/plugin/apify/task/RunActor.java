@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
                         type: io.kestra.plugin.apify.task.RunActor
                         actorId: GdWCkxBtKWOsKjdch
                         maxItems: 1
-                        apiToken: your_apify_token
+                        apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                         input:
                           excludePinnedPosts: false
                           hashtags: ["fyp"]

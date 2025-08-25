@@ -39,7 +39,7 @@ import java.util.List;
                    tasks:
                      - id: list_runs
                        type: io.kestra.plugin.apify.task.GetDataset
-                       apiToken: your_apify_token
+                       apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        datasetId: mecGriFjtDHRNtYOZ
                    """
         ),
@@ -53,7 +53,7 @@ import java.util.List;
                    tasks:
                      - id: list_runs
                        type: io.kestra.plugin.apify.task.GetDataset
-                       apiToken: your_apify_token
+                       apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        datasetId: RNtYOZmecGriFjtDH
                        clean: false
                        offset: 1

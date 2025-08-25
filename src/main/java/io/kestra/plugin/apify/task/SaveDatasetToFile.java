@@ -40,7 +40,7 @@ import java.util.*;
                    tasks:
                      - id: list_runs
                        type: io.kestra.plugin.apify.task.SaveDatasetToFile
-                       apiToken: your_apify_token
+                       apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        datasetId: mecGriFjtDHRNtYOZ
                    """
         ),
@@ -54,7 +54,7 @@ import java.util.*;
                    tasks:
                      - id: list_runs
                        type: io.kestra.plugin.apify.task.SaveDatasetToFile
-                       apiToken: your_apify_token
+                       apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        datasetId: RNtYOZmecGriFjtDH
                        format: CSV
                        fields: userId, #id, #createdAt, postMeta

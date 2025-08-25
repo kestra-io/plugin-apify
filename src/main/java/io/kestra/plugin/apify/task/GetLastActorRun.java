@@ -35,7 +35,7 @@ import lombok.experimental.SuperBuilder;
                    tasks:
                      - id: list_runs
                        type: io.kestra.plugin.apify.actor.GetLastActorRun
-                       apiToken: your_apify_token
+                       apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        actorId: GdWCkxBtKWOsKjdch
                    """
         )
