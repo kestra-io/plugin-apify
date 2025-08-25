@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +124,8 @@ public abstract class AbstractGetDataset extends ApifyConnection {
     )
     @Builder.Default
     private Property<Boolean> simplified = Property.ofValue(false);
+
+    protected Duration DEFAULT_TIMEOUT_DURATION = Duration.ofSeconds(300);
 
     public String buildURL(RunContext runContext) throws IllegalVariableEvaluationException {
         String rDatasetId = runContext.render(this.datasetId).as(String.class).orElseThrow(

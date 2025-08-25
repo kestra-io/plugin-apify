@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 @SuperBuilder
@@ -123,7 +125,9 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
          * If the user uses both the ActorRun and SaveDatasetToFile task,
          * we need to retry the request if we get an empty response.
          */
-        while (true) {
+        Instant end = Instant.now().plus(DEFAULT_TIMEOUT_DURATION);
+        boolean isTaskTimeoutSet = runContext.render(this.timeout).as(Duration.class).isPresent();
+        while (isTaskTimeoutSet || end.isBefore(Instant.now())) {
             URI uri = this.makeCallAndWriteToFile(runContext, this.buildGetRequest(url));
 
             try (InputStream inputStream = runContext.storage().getFile(uri)) {
@@ -136,6 +140,8 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
             logger.debug("Received empty dataset, will retry again in 5000ms");
             Thread.sleep(5000);
         }
+
+        throw new IllegalStateException("Timeout reached before dataset was available, please try again later or increase the timeout duration of the task.");
     }
 
     @Override

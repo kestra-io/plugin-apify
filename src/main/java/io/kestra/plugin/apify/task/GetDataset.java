@@ -13,6 +13,8 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.slf4j.Logger;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 @SuperBuilder
@@ -80,7 +82,10 @@ public class GetDataset extends AbstractGetDataset implements RunnableTask<GetDa
          * If the user uses both the ActorRun and GetDataset task,
          * we need to retry the request if we get an empty response.
          */
-        while (true) {
+
+        Instant end = Instant.now().plus(DEFAULT_TIMEOUT_DURATION);
+        boolean isTaskTimeoutSet = runContext.render(this.timeout).as(Duration.class).isPresent();
+        while (isTaskTimeoutSet || end.isBefore(Instant.now())) {
             List<?> dataset = this.makeCall(runContext, requestBuilder, List.class);
 
             if (!dataset.isEmpty()) {
@@ -90,6 +95,8 @@ public class GetDataset extends AbstractGetDataset implements RunnableTask<GetDa
             log.debug("Received empty dataset, will retry again in 5000ms");
             Thread.sleep(5000);
         }
+
+        throw new IllegalStateException("Timeout reached before dataset was available, please try again later or increase the timeout duration of the task.");
     }
 
     public record Output(List<?> dataset) implements io.kestra.core.models.tasks.Output {
