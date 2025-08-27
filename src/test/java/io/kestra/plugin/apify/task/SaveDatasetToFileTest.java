@@ -24,8 +24,10 @@ class SaveDatasetToFileTest {
     @Inject
     RunContextFactory runContextFactory;
 
+    private static final URI fakeUri = URI.create("kestra://fake-uri");
+
     @Test
-    void testTimeoutBehavior() throws Exception {
+    void givenNoDatasetAvailable_whenRunExceedsTimeout_thenThrowsIllegalStateException() throws Exception {
         SaveDatasetToFile saveDatasetToFile = SaveDatasetToFile.builder()
             .datasetId(Property.ofValue("dataset-id"))
             .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(500))
@@ -42,7 +44,7 @@ class SaveDatasetToFileTest {
 
         when(runContext.storage()).thenReturn(storage);
 
-        Mockito.doReturn(URI.create("kestra://fake-uri"))
+        Mockito.doReturn(fakeUri)
             .when(saveDatasetToFileSpy)
             .makeCallAndWriteToFile(eq(runContext), any());
 
@@ -50,6 +52,33 @@ class SaveDatasetToFileTest {
         assertEquals(
             "Timeout reached before dataset was available, please try again later or increase the timeout duration of the task.",
             timeoutException.getMessage()
+        );
+    }
+
+    @Test
+    void givenDatasetAvailable_whenRun_thenReturnsExpectedDataset() throws Exception {
+        SaveDatasetToFile saveDatasetToFile = SaveDatasetToFile.builder()
+            .datasetId(Property.ofValue("dataset-id"))
+            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(500))
+            .build();
+
+        SaveDatasetToFile saveDatasetToFileSpy = Mockito.spy(saveDatasetToFile);
+        RunContext runContext = Mockito.spy(runContextFactory.of());
+
+        Storage storage = mock(Storage.class);
+        when(storage.getFile(any())).thenReturn(
+            new ByteArrayInputStream("[{'key': 'value'}]".getBytes())
+        );
+
+        when(runContext.storage()).thenReturn(storage);
+
+        Mockito.doReturn(fakeUri)
+            .when(saveDatasetToFileSpy)
+            .makeCallAndWriteToFile(eq(runContext), any());
+
+        assertEquals(
+            fakeUri,
+            saveDatasetToFileSpy.run(runContext).getPath()
         );
     }
 }

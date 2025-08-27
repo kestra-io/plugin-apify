@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,7 +24,7 @@ class GetDatasetTest {
     RunContextFactory runContextFactory = new RunContextFactory();
 
     @Test
-    void testTimeoutBehavior() throws Exception {
+    void givenNoDatasetAvailable_whenRunExceedsTimeout_thenThrowsIllegalStateException() throws Exception {
         GetDataset getDataset = GetDataset.builder()
             .datasetId(Property.ofValue("dataset-id"))
             .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(500))
@@ -40,6 +41,28 @@ class GetDatasetTest {
         assertEquals(
             "Timeout reached before dataset was available, please try again later or increase the timeout duration of the task.",
             timeoutException.getMessage()
+        );
+    }
+
+    @Test
+    void givenDatasetAvailable_whenRun_thenReturnsExpectedDataset() throws Exception {
+        List<Map<String, Object>> expected = List.of(Map.of("key", "value"));
+        GetDataset getDataset = GetDataset.builder()
+            .datasetId(Property.ofValue("dataset-id"))
+            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(500))
+            .build();
+
+        GetDataset getDatasetSpy = Mockito.spy(getDataset);
+        RunContext runContext = runContextFactory.of();
+
+        Mockito.doReturn(expected)
+            .when(getDatasetSpy)
+            .makeCall(eq(runContext), any(), eq(List.class));
+
+
+        assertEquals(
+            expected,
+            getDatasetSpy.run(runContext).dataset()
         );
     }
 }
