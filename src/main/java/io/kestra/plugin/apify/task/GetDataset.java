@@ -72,7 +72,7 @@ import java.util.List;
 public class GetDataset extends AbstractGetDataset implements RunnableTask<GetDataset.Output> {
     @Override
     public Output run(RunContext runContext) throws Exception {
-        Logger log = runContext.logger();
+        Logger logger = runContext.logger();
         HttpRequest.HttpRequestBuilder requestBuilder = this.buildGetRequest(
             this.buildURL(runContext)
         );
