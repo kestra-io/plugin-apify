@@ -16,6 +16,7 @@ abstract class CommonActorPricingInfoTest {
                 "notifiedAboutFutureChangeAt": "2025-07-05T12:05:00.000Z",
                 "notifiedAboutChangeAt": "2025-06-05T12:05:00.000Z",
                 "reasonForChange": "reasonForChange", [IMPLEMENTATION_SPECIFIC_PROPERTIES]
+                ,"unknownProperty": "should be ignored"
             }
             """;
 
@@ -50,7 +51,7 @@ abstract class CommonActorPricingInfoTest {
         assertInstanceOf(clazz, pricingInfo);
 
         String serialisedJson = objectMapper.writeValueAsString(pricingInfo);
-        assertEquals(getJson().replaceAll("[\\n ]", ""), serialisedJson);
+        assertEquals(getJson().replaceAll("[\\n ]|,\"unknownProperty\": \"should be ignored\"", ""), serialisedJson);
     };
 
     /**

@@ -1,5 +1,6 @@
 package io.kestra.plugin.apify.actor.pricinginfo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.Optional;
     @JsonSubTypes.Type(value = FreeActorPricingInfo.class, name = "FREE")
 })
 @Data
+@JsonIgnoreProperties
 public abstract class CommonActorPricingInfo {
     private String pricingModel;
     /** In [0, 1], fraction of pricePerUnitUsd that goes to Apify */

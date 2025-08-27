@@ -1,8 +1,10 @@
 package io.kestra.plugin.apify.actor;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties
 public class ActorRunStats {
     private Double inputBodyLen;
     private Double restartCount;

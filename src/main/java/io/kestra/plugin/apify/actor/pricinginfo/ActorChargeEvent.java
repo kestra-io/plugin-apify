@@ -1,5 +1,6 @@
 package io.kestra.plugin.apify.actor.pricinginfo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -7,6 +8,7 @@ import java.util.Optional;
 
 @Data
 @AllArgsConstructor
+@JsonIgnoreProperties
 public class ActorChargeEvent {
     Double eventPriceUsd;
     String eventTitle;

@@ -1,7 +1,10 @@
 package io.kestra.plugin.apify.actor;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Optional;
 
+@JsonIgnoreProperties
 public class ActorRunOptions {
     private Double build;
     private Double timeoutSecs;

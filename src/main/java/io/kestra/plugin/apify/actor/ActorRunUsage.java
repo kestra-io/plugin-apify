@@ -1,9 +1,11 @@
 package io.kestra.plugin.apify.actor;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Optional;
 
+@JsonIgnoreProperties
 public class ActorRunUsage {
     // All Optional and number
     @JsonProperty("ACTOR_COMPUTE_UNITS")
