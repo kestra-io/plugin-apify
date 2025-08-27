@@ -91,14 +91,14 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
             client.request(requestBuilder.build(), getWriteHttpResponseToTempFileConsumer(runContext, completableFuture));
         } catch (IllegalVariableEvaluationException illegalVariableEvaluationException) {
             logger.error("Error getting API key for Apify: {}", illegalVariableEvaluationException.getMessage());
-            throw illegalVariableEvaluationException;
+            completableFuture.completeExceptionally(illegalVariableEvaluationException);
         } catch (Exception e) {
             if (e.getClass().equals(ApifyTempFileRuntimeException.class)) {
                 logger.error("Error saving Apify Response to local temp file: {}", e.getCause().getMessage());
             } else {
                 logger.error("Error making request to Apify API: {}", e.getMessage());
             }
-            throw e;
+            completableFuture.completeExceptionally(e);
         }
         return completableFuture.get();
     }
