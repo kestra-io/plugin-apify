@@ -85,15 +85,23 @@ public class GetDataset extends AbstractGetDataset implements RunnableTask<GetDa
 
         Instant end = Instant.now().plus(DEFAULT_TIMEOUT_DURATION);
         boolean isTaskTimeoutSet = runContext.render(this.timeout).as(Duration.class).isPresent();
-        while (isTaskTimeoutSet || end.isBefore(Instant.now())) {
-            List<?> dataset = this.makeCall(runContext, requestBuilder, List.class);
+        Instant doNextCallAt = Instant.now();
+        int retryCount = 0;
 
-            if (!dataset.isEmpty()) {
-                return new Output(dataset);
+        while (!isTaskTimeoutSet && end.isAfter(Instant.now())) {
+            if (doNextCallAt.isBefore(Instant.now())) {
+                List<?> dataset = this.makeCall(runContext, requestBuilder, List.class);
+
+                if (!dataset.isEmpty()) {
+                    return new Output(dataset);
+                }
+
+                retryCount++;
+                int retryDelay = (int) (Math.pow(2, retryCount) * 1000);
+                logger.debug("Received empty dataset, will retry again in {}ms", retryDelay);
+                doNextCallAt = Instant.now().plus(Duration.ofMillis(retryDelay));
             }
 
-            log.debug("Received empty dataset, will retry again in 5000ms");
-            Thread.sleep(5000);
         }
 
         throw new IllegalStateException("Timeout reached before dataset was available, please try again later or increase the timeout duration of the task.");

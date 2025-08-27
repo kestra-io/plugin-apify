@@ -125,6 +125,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
     @Builder.Default
     private Property<Boolean> simplified = Property.ofValue(false);
 
+    @Builder.Default
     protected Duration DEFAULT_TIMEOUT_DURATION = Duration.ofSeconds(300);
 
     public String buildURL(RunContext runContext) throws IllegalVariableEvaluationException {

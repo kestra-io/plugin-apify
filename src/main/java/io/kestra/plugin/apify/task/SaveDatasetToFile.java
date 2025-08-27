@@ -127,18 +127,25 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
          */
         Instant end = Instant.now().plus(DEFAULT_TIMEOUT_DURATION);
         boolean isTaskTimeoutSet = runContext.render(this.timeout).as(Duration.class).isPresent();
-        while (isTaskTimeoutSet || end.isBefore(Instant.now())) {
-            URI uri = this.makeCallAndWriteToFile(runContext, this.buildGetRequest(url));
+        Instant doNextCallAt = Instant.now();
+        int retryCount = 0;
 
-            try (InputStream inputStream = runContext.storage().getFile(uri)) {
-                byte[] firstTwoChars = inputStream.readNBytes(2);
-                if (!Arrays.equals(firstTwoChars, EMPTY_DATASET_BYTES)) {
-                    return new Output(uri);
+        while (!isTaskTimeoutSet && end.isAfter(Instant.now())) {
+            if (doNextCallAt.isBefore(Instant.now())) {
+                URI uri = this.makeCallAndWriteToFile(runContext, this.buildGetRequest(url));
+
+                try (InputStream inputStream = runContext.storage().getFile(uri)) {
+                    byte[] firstTwoChars = inputStream.readNBytes(2);
+                    if (!Arrays.equals(firstTwoChars, EMPTY_DATASET_BYTES)) {
+                        return new Output(uri);
+                    }
                 }
-            }
 
-            logger.debug("Received empty dataset, will retry again in 5000ms");
-            Thread.sleep(5000);
+                retryCount++;
+                int retryDelay = (int) (Math.pow(2, retryCount) * 1000);
+                logger.debug("Received empty dataset, will retry again in {}ms", retryDelay);
+                doNextCallAt = Instant.now().plus(Duration.ofMillis(retryDelay));
+            }
         }
 
         throw new IllegalStateException("Timeout reached before dataset was available, please try again later or increase the timeout duration of the task.");
