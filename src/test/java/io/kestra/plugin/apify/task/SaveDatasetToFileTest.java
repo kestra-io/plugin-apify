@@ -35,7 +35,8 @@ class SaveDatasetToFileTest {
     void givenNoDatasetAvailable_whenRunExceedsTimeout_thenThrowsIllegalStateException() throws Exception {
         SaveDatasetToFile saveDatasetToFile = SaveDatasetToFile.builder()
             .datasetId(Property.ofValue("dataset-id"))
-            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(500))
+            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(2500))
+            .DEFAULT_MAX_INTERVAL_DURATION(Duration.ofMillis(2500))
             .build();
 
         SaveDatasetToFile saveDatasetToFileSpy = Mockito.spy(saveDatasetToFile);
@@ -64,7 +65,8 @@ class SaveDatasetToFileTest {
     void givenDatasetAvailable_whenRun_thenReturnsExpectedDataset() throws Exception {
         SaveDatasetToFile saveDatasetToFile = SaveDatasetToFile.builder()
             .datasetId(Property.ofValue("dataset-id"))
-            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(500))
+            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(2500))
+            .DEFAULT_MAX_INTERVAL_DURATION(Duration.ofMillis(2500))
             .build();
 
         SaveDatasetToFile saveDatasetToFileSpy = Mockito.spy(saveDatasetToFile);

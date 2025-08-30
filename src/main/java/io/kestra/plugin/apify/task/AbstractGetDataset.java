@@ -2,7 +2,9 @@ package io.kestra.plugin.apify.task;
 
 import io.kestra.core.exceptions.IllegalVariableEvaluationException;
 import io.kestra.core.models.property.Property;
+import io.kestra.core.models.tasks.retrys.Exponential;
 import io.kestra.core.runners.RunContext;
+import io.kestra.core.utils.RetryUtils;
 import io.kestra.plugin.apify.ApifyConnection;
 import io.kestra.plugin.apify.ApifySortDirection;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @SuperBuilder
 @ToString
@@ -128,6 +131,9 @@ public abstract class AbstractGetDataset extends ApifyConnection {
     @Builder.Default
     protected Duration DEFAULT_TIMEOUT_DURATION = Duration.ofSeconds(300);
 
+    @Builder.Default
+    protected Duration DEFAULT_MAX_INTERVAL_DURATION = Duration.ofSeconds(32);
+
     public String buildURL(RunContext runContext) throws IllegalVariableEvaluationException {
         String rDatasetId = runContext.render(this.datasetId).as(String.class).orElseThrow(
             () -> new IllegalArgumentException("datasetId is required")
@@ -167,5 +173,39 @@ public abstract class AbstractGetDataset extends ApifyConnection {
 
         String basePath = String.format("/datasets/%s/items", rDatasetId);
         return addQueryParams(basePath, queryParamValues);
+    }
+
+    protected <T> T withRetry(
+        RunContext runContext,
+        Predicate<T> retryIfPredicate,
+        RetryUtils.CheckedSupplier<T> run
+    ) throws Exception {
+        Exponential.ExponentialBuilder<?, ?> builder = Exponential.builder()
+            .delayFactor(2.0)
+            .interval(Duration.ofSeconds(2))
+            .maxInterval(DEFAULT_MAX_INTERVAL_DURATION);
+
+        Duration timeout = runContext.render(this.timeout).as(Duration.class).orElse(null);
+        builder.maxDuration(timeout != null ? timeout : DEFAULT_TIMEOUT_DURATION);
+
+
+        return new RetryUtils().<T, Exception>of(
+            builder.build(),
+            (RetryUtils.RetryFailed retryFailed) -> {
+                throw new IllegalStateException("Timeout reached before dataset was available, please try again " +
+                    "later or increase the timeout duration of the task.");
+            }
+        ).run(retryLoggerWrapper(retryIfPredicate, runContext), run);
+    }
+
+    private static <T> Predicate<T> retryLoggerWrapper(Predicate<T> retryIfPredicate, RunContext runContext) {
+        return (T value) -> {
+            boolean retry = retryIfPredicate.test(value);
+            if (retry) {
+                runContext.logger().debug("Received empty dataset.");
+            }
+
+            return retry;
+        };
     }
 }

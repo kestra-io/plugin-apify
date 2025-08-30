@@ -30,7 +30,8 @@ class GetDatasetTest {
     void givenNoDatasetAvailable_whenRunExceedsTimeout_thenThrowsIllegalStateException() throws Exception {
         GetDataset getDataset = GetDataset.builder()
             .datasetId(Property.ofValue("dataset-id"))
-            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(500))
+            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(2500))
+            .DEFAULT_MAX_INTERVAL_DURATION(Duration.ofMillis(2500))
             .build();
 
         GetDataset getDatasetSpy = Mockito.spy(getDataset);
@@ -52,7 +53,8 @@ class GetDatasetTest {
         List<Map<String, Object>> expected = List.of(Map.of("key", "value"));
         GetDataset getDataset = GetDataset.builder()
             .datasetId(Property.ofValue("dataset-id"))
-            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(500))
+            .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(2500))
+            .DEFAULT_MAX_INTERVAL_DURATION(Duration.ofMillis(2500))
             .build();
 
         GetDataset getDatasetSpy = Mockito.spy(getDataset);

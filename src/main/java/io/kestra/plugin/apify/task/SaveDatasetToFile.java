@@ -14,9 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.net.URI;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
+import java.util.function.Predicate;
 
 @SuperBuilder
 @ToString
@@ -117,38 +116,15 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
 
     @Override
     public Output run(RunContext runContext) throws Exception {
-        Logger logger = runContext.logger();
         String url = this.buildURL(runContext);
 
-        /*
-         * It can take several seconds between an actor run finishing and a dataset being fully uploaded.
-         * If the user uses both the ActorRun and SaveDatasetToFile task,
-         * we need to retry the request if we get an empty response.
-         */
-        Instant end = Instant.now().plus(DEFAULT_TIMEOUT_DURATION);
-        boolean isTaskTimeoutSet = runContext.render(this.timeout).as(Duration.class).isPresent();
-        Instant doNextCallAt = Instant.now();
-        int retryCount = 0;
+        URI uri = withRetry(
+            runContext,
+            isEmptyDataset(runContext),
+            () -> this.makeCallAndWriteToFile(runContext, this.buildGetRequest(url))
+        );
 
-        while (!isTaskTimeoutSet && end.isAfter(Instant.now())) {
-            if (doNextCallAt.isBefore(Instant.now())) {
-                URI uri = this.makeCallAndWriteToFile(runContext, this.buildGetRequest(url));
-
-                try (InputStream inputStream = runContext.storage().getFile(uri)) {
-                    byte[] firstTwoChars = inputStream.readNBytes(2);
-                    if (!Arrays.equals(firstTwoChars, EMPTY_DATASET_BYTES)) {
-                        return new Output(uri);
-                    }
-                }
-
-                retryCount++;
-                int retryDelay = (int) (Math.pow(2, retryCount) * 1000);
-                logger.debug("Received empty dataset, will retry again in {}ms", retryDelay);
-                doNextCallAt = Instant.now().plus(Duration.ofMillis(retryDelay));
-            }
-        }
-
-        throw new IllegalStateException("Timeout reached before dataset was available, please try again later or increase the timeout duration of the task.");
+        return new Output(uri);
     }
 
     @Override
@@ -173,5 +149,17 @@ public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTas
     @AllArgsConstructor
     public static class Output implements io.kestra.core.models.tasks.Output {
         private URI path;
+    }
+
+    private static Predicate<URI> isEmptyDataset(RunContext runContext) {
+        return (URI uri) -> {
+            try (InputStream inputStream = runContext.storage().getFile(uri)) {
+                byte[] firstTwoChars = inputStream.readNBytes(2);
+                return Arrays.equals(firstTwoChars, EMPTY_DATASET_BYTES);
+            } catch (Exception e) {
+                log.error("Failed to read dataset file", e);
+                return false;
+            }
+        };
     }
 }

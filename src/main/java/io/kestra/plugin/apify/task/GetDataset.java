@@ -13,8 +13,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.slf4j.Logger;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 
 @SuperBuilder
@@ -77,34 +76,12 @@ public class GetDataset extends AbstractGetDataset implements RunnableTask<GetDa
             this.buildURL(runContext)
         );
 
-        /*
-         * It can take several seconds between an actor run finishing and a dataset being fully uploaded.
-         * If the user uses both the ActorRun and GetDataset task,
-         * we need to retry the request if we get an empty response.
-         */
-
-        Instant end = Instant.now().plus(DEFAULT_TIMEOUT_DURATION);
-        boolean isTaskTimeoutSet = runContext.render(this.timeout).as(Duration.class).isPresent();
-        Instant doNextCallAt = Instant.now();
-        int retryCount = 0;
-
-        while (!isTaskTimeoutSet && end.isAfter(Instant.now())) {
-            if (doNextCallAt.isBefore(Instant.now())) {
-                List<?> dataset = this.makeCall(runContext, requestBuilder, List.class);
-
-                if (!dataset.isEmpty()) {
-                    return new Output(dataset);
-                }
-
-                retryCount++;
-                int retryDelay = (int) (Math.pow(2, retryCount) * 1000);
-                logger.debug("Received empty dataset, will retry again in {}ms", retryDelay);
-                doNextCallAt = Instant.now().plus(Duration.ofMillis(retryDelay));
-            }
-
-        }
-
-        throw new IllegalStateException("Timeout reached before dataset was available, please try again later or increase the timeout duration of the task.");
+        List<?> dataset = withRetry(
+            runContext,
+            Collection::isEmpty,
+            () -> this.makeCall(runContext, requestBuilder, List.class)
+        );
+        return new Output(dataset);
     }
 
     public record Output(List<?> dataset) implements io.kestra.core.models.tasks.Output {
