@@ -7,6 +7,8 @@ import io.kestra.core.runners.RunContextFactory;
 import io.kestra.core.storages.Storage;
 import io.kestra.plugin.apify.ApifySortDirection;
 import io.kestra.plugin.apify.DataSetFormat;
+import io.kestra.plugin.apify.dataset.Get;
+import io.kestra.plugin.apify.dataset.Save;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -33,13 +35,13 @@ class SaveDatasetToFileTest {
 
     @Test
     void givenNoDatasetAvailable_whenRunExceedsTimeout_thenThrowsIllegalStateException() throws Exception {
-        SaveDatasetToFile saveDatasetToFile = SaveDatasetToFile.builder()
+        Save saveDatasetToFile = Save.builder()
             .datasetId(Property.ofValue("dataset-id"))
             .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(2500))
             .DEFAULT_MAX_INTERVAL_DURATION(Duration.ofMillis(2500))
             .build();
 
-        SaveDatasetToFile saveDatasetToFileSpy = Mockito.spy(saveDatasetToFile);
+        Save saveDatasetToFileSpy = Mockito.spy(saveDatasetToFile);
         RunContext runContext = Mockito.spy(runContextFactory.of());
 
         Storage storage = mock(Storage.class);
@@ -63,13 +65,13 @@ class SaveDatasetToFileTest {
 
     @Test
     void givenDatasetAvailable_whenRun_thenReturnsExpectedDataset() throws Exception {
-        SaveDatasetToFile saveDatasetToFile = SaveDatasetToFile.builder()
+        Save saveDatasetToFile = Save.builder()
             .datasetId(Property.ofValue("dataset-id"))
             .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(2500))
             .DEFAULT_MAX_INTERVAL_DURATION(Duration.ofMillis(2500))
             .build();
 
-        SaveDatasetToFile saveDatasetToFileSpy = Mockito.spy(saveDatasetToFile);
+        Save saveDatasetToFileSpy = Mockito.spy(saveDatasetToFile);
         RunContext runContext = Mockito.spy(runContextFactory.of());
 
         Storage storage = mock(Storage.class);
@@ -91,9 +93,9 @@ class SaveDatasetToFileTest {
 
     @Test
     void givenOnlyRequiredValuesAreProvided_wheBuildingTheUrl_thenDefaultValueShouldBeSetWhereApplicable() throws Exception {
-        SaveDatasetToFile getStructuredDataset = SaveDatasetToFile.builder()
+        Save getStructuredDataset = Save.builder()
             .id("TASK_ID")
-            .type(GetDataset.class.getName())
+            .type(Get.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))
             .apiToken(Property.ofValue("API_KEY"))
             .build();
@@ -110,9 +112,9 @@ class SaveDatasetToFileTest {
 
     @Test
     void givenAllValuesAreProvided_wheBuildingTheUrl_thenAllValuesShouldBePopulated() throws Exception {
-        SaveDatasetToFile getStructuredDataset = SaveDatasetToFile.builder()
+        Save getStructuredDataset = Save.builder()
             .id("TASK_ID")
-            .type(GetDataset.class.getName())
+            .type(Get.class.getName())
             .datasetId(Property.ofValue("DATASET_ID"))
             .clean(Property.ofValue(true))
             .offset(Property.ofValue(1))

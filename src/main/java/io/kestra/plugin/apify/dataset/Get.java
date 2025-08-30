@@ -1,4 +1,4 @@
-package io.kestra.plugin.apify.task;
+package io.kestra.plugin.apify.dataset;
 
 import io.kestra.core.http.HttpRequest;
 import io.kestra.core.models.annotations.Example;
@@ -39,7 +39,7 @@ import java.util.List;
 
                    tasks:
                      - id: list_runs
-                       type: io.kestra.plugin.apify.task.GetDataset
+                       type: io.kestra.plugin.apify.dataset.Get
                        apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        datasetId: mecGriFjtDHRNtYOZ
                    """
@@ -53,7 +53,7 @@ import java.util.List;
 
                    tasks:
                      - id: list_runs
-                       type: io.kestra.plugin.apify.task.GetDataset
+                       type: io.kestra.plugin.apify.dataset.Get
                        apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        datasetId: RNtYOZmecGriFjtDH
                        clean: false
@@ -68,7 +68,7 @@ import java.util.List;
         )
     }
 )
-public class GetDataset extends AbstractGetDataset implements RunnableTask<GetDataset.Output> {
+public class Get extends AbstractGetDataset implements RunnableTask<Get.Output> {
     @Override
     public Output run(RunContext runContext) throws Exception {
         Logger logger = runContext.logger();

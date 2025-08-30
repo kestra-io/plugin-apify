@@ -1,4 +1,4 @@
-package io.kestra.plugin.apify.task;
+package io.kestra.plugin.apify.actor;
 
 import io.kestra.core.http.HttpRequest;
 import io.kestra.core.models.annotations.Example;
@@ -7,8 +7,6 @@ import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
 import io.kestra.plugin.apify.ApifyConnection;
-import io.kestra.plugin.apify.actor.ActorRun;
-import io.kestra.plugin.apify.actor.ActorRunApiResponseWrapper;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -42,7 +40,7 @@ import java.util.stream.Collectors;
 
                     tasks:
                       - id: run_actor
-                        type: io.kestra.plugin.apify.task.RunActor
+                        type: io.kestra.plugin.apify.actor.Run
                         actorId: GdWCkxBtKWOsKjdch
                         maxItems: 1
                         apiToken: "{{ secret('APIFY_API_TOKEN') }}"
@@ -54,7 +52,7 @@ import java.util.stream.Collectors;
         )
     }
 )
-public class RunActor extends ApifyConnection implements RunnableTask<ActorRun> {
+public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
     @Schema(
         title = "Actor ID",
         description = "Actor ID or a tilde-separated owner's username and Actor name."
@@ -122,7 +120,7 @@ public class RunActor extends ApifyConnection implements RunnableTask<ActorRun> 
     )
     private Property<String> webhooks;
 
-    private static final Logger log = LoggerFactory.getLogger(RunActor.class);
+    private static final Logger log = LoggerFactory.getLogger(Run.class);
 
     @Override
     public ActorRun run(RunContext runContext) throws Exception {

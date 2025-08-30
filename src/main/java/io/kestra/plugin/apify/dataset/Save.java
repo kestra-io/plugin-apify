@@ -1,4 +1,4 @@
-package io.kestra.plugin.apify.task;
+package io.kestra.plugin.apify.dataset;
 
 import io.kestra.core.exceptions.IllegalVariableEvaluationException;
 import io.kestra.core.models.annotations.Example;
@@ -40,7 +40,7 @@ import java.util.function.Predicate;
 
                    tasks:
                      - id: list_runs
-                       type: io.kestra.plugin.apify.task.SaveDatasetToFile
+                       type: io.kestra.plugin.apify.dataset.Save
                        apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        datasetId: mecGriFjtDHRNtYOZ
                    """
@@ -54,7 +54,7 @@ import java.util.function.Predicate;
 
                    tasks:
                      - id: list_runs
-                       type: io.kestra.plugin.apify.task.SaveDatasetToFile
+                       type: io.kestra.plugin.apify.dataset.Save
                        apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        datasetId: RNtYOZmecGriFjtDH
                        format: CSV
@@ -66,8 +66,8 @@ import java.util.function.Predicate;
         )
     }
 )
-public class SaveDatasetToFile extends AbstractGetDataset implements RunnableTask<SaveDatasetToFile.Output> {
-    private static final Logger log = LoggerFactory.getLogger(SaveDatasetToFile.class);
+public class Save extends AbstractGetDataset implements RunnableTask<Save.Output> {
+    private static final Logger log = LoggerFactory.getLogger(Save.class);
     @Schema(
         title = "format",
         description = "The format of the dataset. Defaults to `JSON`."

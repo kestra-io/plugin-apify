@@ -1,4 +1,4 @@
-package io.kestra.plugin.apify.task;
+package io.kestra.plugin.apify.dataset;
 
 import io.kestra.core.http.HttpRequest;
 import io.kestra.core.models.annotations.Example;
@@ -34,14 +34,14 @@ import lombok.experimental.SuperBuilder;
 
                    tasks:
                      - id: list_runs
-                       type: io.kestra.plugin.apify.actor.GetLastActorRun
+                       type: io.kestra.plugin.apify.actor.GetLastRun
                        apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                        actorId: GdWCkxBtKWOsKjdch
                    """
         )
     }
 )
-public class GetLastActorRun extends ApifyConnection implements RunnableTask<ActorRun> {
+public class GetLastRun extends ApifyConnection implements RunnableTask<ActorRun> {
     @Schema(
         title = "Actor ID"
     )

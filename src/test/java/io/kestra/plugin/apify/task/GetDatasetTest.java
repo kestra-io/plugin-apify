@@ -5,6 +5,7 @@ import io.kestra.core.models.property.Property;
 import io.kestra.core.runners.RunContext;
 import io.kestra.core.runners.RunContextFactory;
 import io.kestra.plugin.apify.ApifySortDirection;
+import io.kestra.plugin.apify.dataset.Get;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -28,13 +29,13 @@ class GetDatasetTest {
 
     @Test
     void givenNoDatasetAvailable_whenRunExceedsTimeout_thenThrowsIllegalStateException() throws Exception {
-        GetDataset getDataset = GetDataset.builder()
+        Get getDataset = Get.builder()
             .datasetId(Property.ofValue("dataset-id"))
             .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(2500))
             .DEFAULT_MAX_INTERVAL_DURATION(Duration.ofMillis(2500))
             .build();
 
-        GetDataset getDatasetSpy = Mockito.spy(getDataset);
+        Get getDatasetSpy = Mockito.spy(getDataset);
         RunContext runContext = runContextFactory.of();
 
         Mockito.doReturn(Collections.emptyList())
@@ -51,13 +52,13 @@ class GetDatasetTest {
     @Test
     void givenDatasetAvailable_whenRun_thenReturnsExpectedDataset() throws Exception {
         List<Map<String, Object>> expected = List.of(Map.of("key", "value"));
-        GetDataset getDataset = GetDataset.builder()
+        Get getDataset = Get.builder()
             .datasetId(Property.ofValue("dataset-id"))
             .DEFAULT_TIMEOUT_DURATION(Duration.ofMillis(2500))
             .DEFAULT_MAX_INTERVAL_DURATION(Duration.ofMillis(2500))
             .build();
 
-        GetDataset getDatasetSpy = Mockito.spy(getDataset);
+        Get getDatasetSpy = Mockito.spy(getDataset);
         RunContext runContext = runContextFactory.of();
 
         Mockito.doReturn(expected)
@@ -73,7 +74,7 @@ class GetDatasetTest {
 
     @Test
     void givenOnlyRequiredValuesAreProvided_wheBuildingTheUrl_thenDefaultValueShouldBeSetWhereApplicable() throws Exception {
-        GetDataset getStructuredDataset = GetDataset.builder()
+        Get getStructuredDataset = Get.builder()
             .datasetId(Property.ofValue("DATASET_ID"))
             .apiToken(Property.ofValue("API_KEY"))
             .build();
@@ -89,7 +90,7 @@ class GetDatasetTest {
 
     @Test
     void givenAllValuesAreProvided_wheBuildingTheUrl_thenAllValuesShouldBePopulated() throws Exception {
-        GetDataset getStructuredDataset = GetDataset.builder()
+        Get getStructuredDataset = Get.builder()
             .datasetId(Property.ofValue("DATASET_ID"))
             .clean(Property.ofValue(true))
             .offset(Property.ofValue(1))
