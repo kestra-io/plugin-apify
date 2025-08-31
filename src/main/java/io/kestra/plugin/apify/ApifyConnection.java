@@ -173,14 +173,12 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
             return;
         }
 
-        Optional<String> apiTokenRendered = runContext.render(this.apiToken).as(String.class);
-
-        if (apiTokenRendered.isEmpty()) {
-            throw new IllegalArgumentException("Missing required apiToken field");
-        }
+        String apiTokenRendered = runContext.render(this.apiToken).as(String.class).orElseThrow(
+            () -> new IllegalArgumentException("Missing required apiToken field")
+        );
 
         requestBuilder
-            .addHeader("Authorization", "Bearer " + apiTokenRendered.get())
+            .addHeader("Authorization", "Bearer " + apiTokenRendered)
             .addHeader("Content-Type", JSON_CONTENT_TYPE);
     }
 
