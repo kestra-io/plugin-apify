@@ -46,8 +46,8 @@ class SaveDatasetToFileTest {
 
         Storage storage = mock(Storage.class);
 
-        when(storage.getFile(any())).thenReturn(
-            new ByteArrayInputStream("[]".getBytes())
+        when(storage.getFile(any())).thenAnswer(
+            (path) -> new ByteArrayInputStream("[]".getBytes())
         );
 
         when(runContext.storage()).thenReturn(storage);
@@ -75,8 +75,8 @@ class SaveDatasetToFileTest {
         RunContext runContext = Mockito.spy(runContextFactory.of());
 
         Storage storage = mock(Storage.class);
-        when(storage.getFile(any())).thenReturn(
-            new ByteArrayInputStream("[{'key': 'value'}]".getBytes())
+        when(storage.getFile(any())).thenAnswer(
+            (path) -> new ByteArrayInputStream("[{'key': 'value'}]".getBytes())
         );
 
         when(runContext.storage()).thenReturn(storage);
