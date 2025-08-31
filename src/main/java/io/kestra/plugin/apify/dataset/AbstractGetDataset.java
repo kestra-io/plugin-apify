@@ -145,16 +145,16 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         Optional<String> rView = runContext.render(this.view).as(String.class);
 
         final Map<String, Object> queryParamValues = new HashMap<>(Map.of(
-            "cleanValue", runContext.render(this.clean).as(Boolean.class).orElseThrow(),
-            "offset", runContext.render(this.offset).as(Integer.class).orElseThrow(),
+            "cleanValue", runContext.render(this.clean).as(Boolean.class).orElse(true),
+            "offset", runContext.render(this.offset).as(Integer.class).orElse(0),
             "sortDirection", runContext.render(this.sort).as(ApifySortDirection.class)
-                .orElseThrow() == ApifySortDirection.DESC,
-            "flatten", runContext.render(this.flatten).as(Boolean.class).orElseThrow(),
-            "skipEmpty", runContext.render(this.skipEmpty).as(Boolean.class).orElseThrow(),
-            "limit", runContext.render(this.limit).as(Integer.class).orElseThrow(),
-            "simplified", runContext.render(this.simplified).as(Boolean.class).orElseThrow(),
-            "skipFailedPages", runContext.render(this.skipFailedPages).as(Boolean.class).orElseThrow(),
-            "skipHidden", runContext.render(this.skipHidden).as(Boolean.class).orElseThrow()
+                .orElse(ApifySortDirection.ASC) == ApifySortDirection.DESC,
+            "flatten", runContext.render(this.flatten).as(Boolean.class).orElse(false),
+            "skipEmpty", runContext.render(this.skipEmpty).as(Boolean.class).orElse(true),
+            "limit", runContext.render(this.limit).as(Integer.class).orElse(1000),
+            "simplified", runContext.render(this.simplified).as(Boolean.class).orElse(false),
+            "skipFailedPages", runContext.render(this.skipFailedPages).as(Boolean.class).orElse(false),
+            "skipHidden", runContext.render(this.skipHidden).as(Boolean.class).orElse(false)
         ));
 
         if (!rFields.isEmpty()) {

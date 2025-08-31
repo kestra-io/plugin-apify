@@ -134,11 +134,11 @@ public class Save extends AbstractGetDataset implements RunnableTask<Save.Output
 
         String baseUrl = super.buildURL(runContext);
         final Map<String, Object> queryParamValues = new HashMap<>(Map.of(
-            "format", runContext.render(this.format).as(DataSetFormat.class).orElseThrow(),
-            "delimiter", runContext.render(this.delimiter).as(String.class).orElseThrow(),
-            "xmlRoot", runContext.render(this.xmlRoot).as(String.class).orElseThrow(),
-            "xmlRow", runContext.render(this.xmlRow).as(String.class).orElseThrow(),
-            "skipHeaderRow", runContext.render(this.skipHeaderRow).as(Boolean.class).orElseThrow()
+            "format", runContext.render(this.format).as(DataSetFormat.class).orElse(DataSetFormat.JSON),
+            "delimiter", runContext.render(this.delimiter).as(String.class).orElse(","),
+            "xmlRoot", runContext.render(this.xmlRoot).as(String.class).orElse("items"),
+            "xmlRow", runContext.render(this.xmlRow).as(String.class).orElse("item"),
+            "skipHeaderRow", runContext.render(this.skipHeaderRow).as(Boolean.class).orElse(false)
         ));
 
         rBom.ifPresent(b -> queryParamValues.put("bom", b));
