@@ -20,8 +20,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Get Unstructured Dataset",
-    description = "Get Unstructured Dataset by ID"
+    title = "Get latest Actor Run for given Actor ID"
 )
 @Plugin(
     examples = {
