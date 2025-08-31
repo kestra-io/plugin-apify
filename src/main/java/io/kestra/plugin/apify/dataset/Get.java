@@ -24,8 +24,9 @@ import java.util.List;
 @Schema(
     title = "Get Dataset",
     description = "This task uses short polling to get the dataset from Apify. " +
-        "If this tasks received an empty dataset, it will retry the request every 5 seconds until the dataset is " +
-        "available or the tasks timeout limit is reached. When this task receives a empty dataset it is typically " +
+        "If this task receives an empty dataset, it will retry with exponential back-off until the dataset becomes " +
+        "available or the timeout limit is reached. By default, the task will time out after 300 seconds to prevent " +
+        "it from hanging. When this task receives a empty dataset it is typically " +
         "because the actor run has not finished uploading the Dataset."
 )
 @Plugin(

@@ -25,8 +25,9 @@ import java.util.function.Predicate;
 @Schema(
     title = "Save Apify Dataset to File",
     description = "This task uses short polling to save the dataset from Apify to a temp file. " +
-        "If this tasks received an empty dataset, it will retry the request every 5 seconds until the dataset is " +
-        "available or the tasks timeout limit is reached. When this task receives a empty dataset it is typically " +
+        "If this task receives an empty dataset, it will retry with exponential back-off until the dataset becomes " +
+        "available or the timeout limit is reached. By default, the task will time out after 300 seconds to prevent " +
+        "it from hanging. When this task receives a empty dataset it is typically " +
         "because the actor run has not finished uploading the Dataset."
 )
 @Plugin(
