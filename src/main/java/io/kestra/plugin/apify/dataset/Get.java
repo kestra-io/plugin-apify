@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.slf4j.Logger;
 
 import java.util.Collection;
 import java.util.List;
@@ -72,7 +71,6 @@ import java.util.List;
 public class Get extends AbstractGetDataset implements RunnableTask<Get.Output> {
     @Override
     public Output run(RunContext runContext) throws Exception {
-        Logger logger = runContext.logger();
         HttpRequest.HttpRequestBuilder requestBuilder = this.buildGetRequest(
             this.buildURL(runContext)
         );

@@ -2,8 +2,8 @@ package io.kestra.plugin.apify.actor.pricinginfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kestra.core.serializers.JacksonMapper;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 abstract class CommonActorPricingInfoTest {
     protected static final ObjectMapper objectMapper = JacksonMapper.ofJson(false);
@@ -20,7 +20,7 @@ abstract class CommonActorPricingInfoTest {
             }
             """;
 
-    void testPricePerEventActorPricingInfoDeserialization(CommonActorPricingInfo commonActorPricingInfo) throws Exception {
+    void testPricePerEventActorPricingInfoDeserialization(CommonActorPricingInfo commonActorPricingInfo) {
         assertEquals(getPricingModel(), commonActorPricingInfo.getPricingModel());
 
         assertTrue(commonActorPricingInfo.getApifyMarginPercentage().isPresent());
@@ -52,7 +52,7 @@ abstract class CommonActorPricingInfoTest {
 
         String serialisedJson = objectMapper.writeValueAsString(pricingInfo);
         assertEquals(getJson().replaceAll("[\\n ]|,\"unknownProperty\": \"should be ignored\"", ""), serialisedJson);
-    };
+    }
 
     /**
      * @return Returns the pricing model used as the key for Polymorphic serialization of CommonActorPricingInfo objects
