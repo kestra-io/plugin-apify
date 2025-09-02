@@ -12,6 +12,7 @@ import io.kestra.core.models.tasks.Task;
 import io.kestra.core.runners.RunContext;
 import io.kestra.core.serializers.JacksonMapper;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,6 +45,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     private static final String APIFY_API_URL = "https://api.apify.com/v2";
     private static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
 
+    @NotNull
     private Property<String> apiToken;
 
     @Schema(title = "The HTTP client configuration.")
