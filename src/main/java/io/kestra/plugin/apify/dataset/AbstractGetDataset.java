@@ -183,6 +183,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         Exponential.ExponentialBuilder<?, ?> builder = Exponential.builder()
             .delayFactor(2.0)
             .interval(Duration.ofSeconds(2))
+            .maxAttempts(-1)
             .maxInterval(DEFAULT_MAX_INTERVAL_DURATION);
 
         Duration timeout = runContext.render(this.timeout).as(Duration.class).orElse(null);
