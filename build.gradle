@@ -1,6 +1,4 @@
 plugins {
-    id "com.vanniktech.maven.publish" version "0.34.0"
-    id "io.kestra.gradle.inject-bom-versions" version "1.0.0"
     id 'java-library'
     id "idea"
     id 'jacoco'
@@ -9,6 +7,7 @@ plugins {
     id 'signing'
     id "com.github.ben-manes.versions" version "0.52.0"
     id 'net.researchgate.release' version '3.1.0'
+    id "com.vanniktech.maven.publish" version "0.34.0"
 }
 
 def isBuildSnapshot = version.toString().endsWith("-SNAPSHOT")
@@ -29,7 +28,7 @@ java {
 }
 
 group = "io.kestra.plugin"
-description = 'Plugin template for Kestra'
+description = 'Apify plugin for Kestra'
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
@@ -172,8 +171,8 @@ jar {
     manifest {
         attributes(
                 "X-Kestra-Name": project.name,
-                "X-Kestra-Title": "Template",
-                "X-Kestra-Group": project.group + ".templates",
+                "X-Kestra-Title": "Apify",
+                "X-Kestra-Group": project.group + ".apify",
                 "X-Kestra-Description": project.description,
                 "X-Kestra-Version": project.version
         )
