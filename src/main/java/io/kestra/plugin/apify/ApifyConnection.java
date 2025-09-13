@@ -44,6 +44,8 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     protected final static ObjectMapper mapper = JacksonMapper.ofJson(false);
     private static final String APIFY_API_URL = "https://api.apify.com/v2";
     private static final String JSON_CONTENT_TYPE = "application/json; charset=UTF-8";
+    protected static final String INTEGRATION_VALUE = "kestra";
+    protected static final String INTEGRATION_HEADER = "x-apify-integration-platform";
 
     @NotNull
     private Property<String> apiToken;
@@ -123,7 +125,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
      * Creates a GET request builder with authentication and headers
      */
     protected HttpRequest.HttpRequestBuilder buildGetRequest(String url) {
-        return HttpRequest.builder()
+        return getBaseHttpRequestBuilder()
             .uri(URI.create(getBaseUrl() + "/" + url))
             .method("GET");
     }
@@ -134,7 +136,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     protected HttpRequest.HttpRequestBuilder buildPostRequest(String url, Object body) throws Exception {
         String jsonBody = mapper.writeValueAsString(body);
 
-        return HttpRequest.builder()
+        return getBaseHttpRequestBuilder()
             .uri(URI.create(getBaseUrl() + "/" + url))
             .method("POST")
             .body(HttpRequest.StringRequestBody.builder().content(jsonBody).build());
@@ -146,7 +148,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     protected HttpRequest.HttpRequestBuilder buildPatchRequest(String url, Object body) throws Exception {
         String jsonBody = mapper.writeValueAsString(body);
 
-        return HttpRequest.builder()
+        return getBaseHttpRequestBuilder()
             .uri(URI.create(getBaseUrl() + "/" + url))
             .method("PATCH")
             .body(HttpRequest.StringRequestBody.builder().content(jsonBody).build());
@@ -156,9 +158,13 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
      * Creates a DELETE request builder with authentication and headers
      */
     protected HttpRequest.HttpRequestBuilder buildDeleteRequest(String url)  {
-        return HttpRequest.builder()
+        return getBaseHttpRequestBuilder()
             .uri(URI.create(getBaseUrl() + "/" + url))
             .method("DELETE");
+    }
+
+    private static HttpRequest.HttpRequestBuilder getBaseHttpRequestBuilder() {
+        return HttpRequest.builder().addHeader(INTEGRATION_HEADER, INTEGRATION_VALUE);
     }
 
     /**
