@@ -1,0 +1,8 @@
+group: io.kestra.plugin.apify.actor
+name: "actor"
+title: "Actor"
+description: ""
+body: ""
+videos: []
+createdBy: "Kestra Core Team"
+managedBy: "Kestra Core Team"
