@@ -1,0 +1,8 @@
+group: io.kestra.plugin.apify.dataset
+name: "dataset"
+title: "Dataset"
+description: ""
+body: ""
+videos: []
+createdBy: "Kestra Core Team"
+managedBy: "Kestra Core Team"
