@@ -1,8 +1,8 @@
 group: io.kestra.plugin.apify.actor
 name: "actor"
 title: "Apify Actor"
-description: "This sub-group of plugins contains tasks to interact with Apify Actors."
-body: ""
+description: "Tasks that run Apify Actors with configurable inputs, limits, and webhooks."
+body: "Provide `actorId` and `apiToken` to start an Apify Actor from a workflow and receive the resulting run payload. Optional parameters like `input`, `maxItems`, `maxTotalChargeUsd`, `build`, and `waitForFinish` let you cap spend, pick builds, and wait for completion while staying notified via webhooks."
 videos: []
 createdBy: "Kestra Core Team"
 managedBy: "Kestra Core Team"
