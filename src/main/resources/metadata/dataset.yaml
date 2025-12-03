@@ -1,8 +1,8 @@
 group: io.kestra.plugin.apify.dataset
 name: "dataset"
 title: "Apify Dataset"
-description: "This sub-group of plugins contains tasks to interact with Apify Datasets."
-body: ""
+description: "Tasks that retrieve Apify dataset items or export them to storage with filtering."
+body: "Use `datasetId` with your `apiToken` to poll for dataset availability, filter or flatten fields, control sorting and pagination, and skip empty or hidden items. The Save task can output JSON, CSV, and other formats to temp storage with delimiter/BOM controls, while Get returns the ready-to-use item list after retrying until data is available."
 videos: []
 createdBy: "Kestra Core Team"
 managedBy: "Kestra Core Team"

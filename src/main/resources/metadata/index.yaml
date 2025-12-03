@@ -1,8 +1,8 @@
 group: io.kestra.plugin.apify
 name: "apify"
 title: "Apify"
-description: "A plugin to show how to build a plugin in Kestra."
-body: ""
+description: "Tasks that orchestrate Apify Actors and datasets from Kestra."
+body: "Trigger Apify Actors and collect their datasets without hand-rolling API calls. All tasks require an Apify API token via `apiToken`, and expose controls for actor inputs, cost/time limits, and dataset retrieval or export options."
 videos: []
 createdBy: "Kestra Core Team"
 managedBy: "Kestra Core Team"
