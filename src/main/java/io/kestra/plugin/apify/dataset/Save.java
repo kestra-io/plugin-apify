@@ -23,12 +23,8 @@ import java.util.function.Predicate;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Save Apify Dataset to File",
-    description = "This task uses short polling to save the dataset from Apify to a temp file. " +
-        "If this task receives an empty dataset, it will retry with exponential back-off until the dataset becomes " +
-        "available or the timeout limit is reached. By default, the task will time out after 300 seconds to prevent " +
-        "it from hanging. When this task receives a empty dataset it is typically " +
-        "because the actor run has not finished uploading the Dataset."
+    title = "Save Apify dataset to temp file",
+    description = "Downloads dataset items to Kestra temp storage with short polling and exponential backoff until data appears or the 300s timeout is reached. Retries on empty responses while the actor finishes writing."
 )
 @Plugin(
     examples = {
@@ -70,45 +66,42 @@ import java.util.function.Predicate;
 public class Save extends AbstractGetDataset implements RunnableTask<Save.Output> {
     private static final Logger log = LoggerFactory.getLogger(Save.class);
     @Schema(
-        title = "format",
-        description = "The format of the dataset. Defaults to `JSON`."
+        title = "Format",
+        description = "Dataset export format; defaults to JSON."
     )
     @Builder.Default
     private Property<DataSetFormat> format = Property.ofValue(DataSetFormat.JSON);
 
     @Schema(
-        title = "delimiter",
-        description = "A delimiter character for CSV files, only used if format=csv."
+        title = "Delimiter",
+        description = "CSV delimiter when format is CSV; ignored otherwise."
     )
     @Builder.Default
     private Property<String> delimiter = Property.ofValue(",");
 
     @Schema(
-        title = "bom",
-        description = "All text responses are encoded in UTF-8 encoding. By default, the format=csv files are " +
-            "prefixed with the UTF-8 Byte Order Mark (BOM), while json, jsonl, xml, html and rss files are not." +
-            "If you want to override this default behavior, specify bom=1 to include the BOM or bom=0 " +
-            "to skip it. By default this value is not included in request made to the Apify API."
+        title = "Include BOM",
+        description = "Force UTF-8 BOM for text outputs; Apify adds it to CSV by default and omits for JSON/JSONL/XML/HTML/RSS unless overridden."
     )
     private Property<Boolean> bom;
 
     @Schema(
-        title = "xmlRoot",
-        description = "Overrides default root element name of xml output. By default the root element is items."
+        title = "XML root",
+        description = "Root element name for XML output; defaults to items."
     )
     @Builder.Default
     private Property<String> xmlRoot = Property.ofValue("items");
 
     @Schema(
-        title = "xmlRow",
-        description = "Overrides default element name that wraps each page or page function result object in xml output. By default the element name is item."
+        title = "XML row",
+        description = "Element name for each record in XML output; defaults to item."
     )
     @Builder.Default
     private Property<String> xmlRow = Property.ofValue("item");
 
     @Schema(
-        title = "skipHeaderRow",
-        description = "If true then header row in the csv format is skipped. Default value false."
+        title = "Skip header row",
+        description = "Omit CSV header row when true; default false."
     )
     @Builder.Default
     private Property<Boolean> skipHeaderRow = Property.ofValue(false);

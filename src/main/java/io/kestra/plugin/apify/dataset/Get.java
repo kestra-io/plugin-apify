@@ -21,12 +21,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Get Dataset",
-    description = "This task uses short polling to get the dataset from Apify. " +
-        "If this task receives an empty dataset, it will retry with exponential back-off until the dataset becomes " +
-        "available or the timeout limit is reached. By default, the task will time out after 300 seconds to prevent " +
-        "it from hanging. When this task receives a empty dataset it is typically " +
-        "because the actor run has not finished uploading the Dataset."
+    title = "Fetch Apify dataset items",
+    description = "Polls the Apify dataset items API until data is available or the 300s timeout elapses, using exponential backoff. Empty responses are retried because the actor may still be writing items."
 )
 @Plugin(
     examples = {
