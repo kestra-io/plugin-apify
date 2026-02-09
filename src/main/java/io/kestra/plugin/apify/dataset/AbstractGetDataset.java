@@ -183,7 +183,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         builder.maxDuration(timeout != null ? timeout : DEFAULT_TIMEOUT_DURATION);
 
 
-        return new RetryUtils().<T, Exception>of(
+        return RetryUtils.<T, Exception>of(
             builder.build(),
             (RetryUtils.RetryFailed retryFailed) -> {
                 throw new IllegalStateException("Timeout reached before dataset was available, please try again " +
