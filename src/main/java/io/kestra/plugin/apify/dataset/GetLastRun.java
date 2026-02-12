@@ -20,7 +20,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Get latest Actor Run for given Actor ID"
+    title = "Fetch latest actor run",
+    description = "Returns the most recent run for the specified actor ID."
 )
 @Plugin(
     examples = {
@@ -42,7 +43,8 @@ import lombok.experimental.SuperBuilder;
 )
 public class GetLastRun extends ApifyConnection implements RunnableTask<ActorRun> {
     @Schema(
-        title = "Actor ID"
+        title = "Actor ID",
+        description = "Apify actor identifier whose last run will be returned."
     )
     @NotNull
     private Property<String> actorId;

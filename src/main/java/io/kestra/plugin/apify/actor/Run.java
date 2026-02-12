@@ -27,7 +27,8 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Run Apify Actor"
+    title = "Start an Apify actor run",
+    description = "Triggers an Apify actor with optional input and run caps, adding query parameters only when set. Returns the run detail from Apify."
 )
 @Plugin(
     examples = {
@@ -55,68 +56,56 @@ import java.util.stream.Collectors;
 public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
     @Schema(
         title = "Actor ID",
-        description = "Actor ID or a tilde-separated owner's username and Actor name."
+        description = "Actor ID or owner~actor name to execute."
     )
     @NotNull
     private Property<String> actorId;
 
     @Schema(
         title = "Input",
-        description = "Input for the Actor run. The input is optional and can be used to pass data to the Actor." +
-            "If no value is provided then the Actor will run with default run configuration for the Actor. "
+        description = "JSON payload passed to the actor; omitted when empty so the actor uses its default input."
     )
     private Property<Map<String, Object>> input;
 
     @Schema(
-        title = "Timeout",
-        description = "Optional timeout for the run, in seconds. By default, the run uses a timeout specified in the " +
-            "default run configuration for the Actor."
+        title = "Timeout (seconds)",
+        description = "Actor run timeout override in seconds; falls back to the actor's default if unset."
     )
     private Property<Double> requestTimeout;
 
     @Schema(
-        title = "Memory",
-        description = "Memory limit for the run, in megabytes. The amount of memory can be set to a power of 2 " +
-            "with a minimum of 128. By default, the run uses a memory limit specified in the default run " +
-            "configuration for the Actor."
+        title = "Memory (MB)",
+        description = "Memory limit in megabytes (powers of two, minimum 128); uses actor default when omitted."
     )
     private Property<Double> memory;
 
     @Schema(
         title = "Max items",
-        description = "The maximum number of items that the Actor run should return. This is useful for " +
-            "pay-per-result Actors, as it allows you to limit the number of results that will be charged " +
-            "to your subscription. "
+        description = "Cap number of items returned to control pay-per-result charges."
     )
     private Property<Integer> maxItems;
 
     @Schema(
-        title = "Max total charge USD",
-        description = "Specifies the maximum cost of the Actor run. This parameter is useful for " +
-            "pay-per-event Actors, as it allows you to limit the amount charged to your subscription."
+        title = "Max total charge (USD)",
+        description = "Maximum allowed cost for the run; stops charges beyond this ceiling."
     )
     private Property<Double> maxTotalChargeUsd;
 
     @Schema(
         title = "Build",
-        description = "Specifies the Actor build to run. It can be either a build tag or build number. By default, " +
-            "the run uses the build specified in the default run configuration for the Actor (typically latest)."
+        description = "Build tag or number to run; defaults to the actor's configured build (typically latest)."
     )
     private Property<String> build;
 
     @Schema(
-        title = "Wait for finish",
-        description = "The maximum number of seconds the server waits for the run to finish. By default, it is 0," +
-            " the maximum value is 60. If the run finishes in time then the returned run object will have a terminal" +
-            " status (e.g. SUCCEEDED), otherwise it will have a transitional status (e.g. RUNNING)."
+        title = "Wait for finish (seconds)",
+        description = "Seconds to wait synchronously for completion (0–60); default 0 returns a transitional status if still running."
     )
     private Property<Double> waitForFinish;
 
     @Schema(
         title = "Webhooks",
-        description = "Specifies optional webhooks associated with the Actor run, which can be used to receive a " +
-            "notification e.g. when the Actor finished or failed. The value is a Base64-encoded JSON array of " +
-            "objects defining the webhooks."
+        description = "Base64-encoded JSON array describing webhooks for lifecycle events."
     )
     private Property<String> webhooks;
 

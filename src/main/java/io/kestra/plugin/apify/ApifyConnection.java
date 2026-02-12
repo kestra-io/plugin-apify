@@ -36,8 +36,8 @@ import java.util.function.Consumer;
 @Getter
 @NoArgsConstructor
 @Schema(
-    title = "Run Actor",
-    description = "Run Actor for given Actor ID"
+    title = "Make authenticated Apify API calls",
+    description = "Base class for Apify tasks that signs requests with the apiToken, sets the Apify integration header, and honours the optional apify.api.base.url system override (default https://api.apify.com/v2)."
 )
 @Plugin()
 public abstract class ApifyConnection extends Task implements ApifyConnectionInterface {
@@ -50,7 +50,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     @NotNull
     private Property<String> apiToken;
 
-    @Schema(title = "The HTTP client configuration.")
+    @Schema(title = "HTTP client options", description = "Optional HttpConfiguration applied to every Apify call, including timeouts, retries, and proxy settings.")
     HttpConfiguration options;
 
     protected static String getBaseUrl() {

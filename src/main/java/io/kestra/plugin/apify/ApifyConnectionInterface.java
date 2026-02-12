@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public interface ApifyConnectionInterface {
     @Schema(
         title = "Apify API token",
-        description = "Api Token for Apify. You can find it in your Apify account settings."
+        description = "Personal Apify API token used for all requests; required."
     )
     Property<String> getApiToken();
 }
