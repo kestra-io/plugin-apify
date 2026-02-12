@@ -1,7 +1,7 @@
 @PluginSubGroup(
     title = "Apify Dataset",
     description = "This sub-group of plugins contains tasks to interact with Apify Datasets.",
-    categories = { PluginSubGroup.PluginCategory.CLOUD }
+        categories = { PluginSubGroup.PluginCategory.DATA }
 )
 package io.kestra.plugin.apify.dataset;
 
