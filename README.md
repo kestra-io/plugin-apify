@@ -36,9 +36,9 @@
 <p align="center" style="color:grey;"><i>Get started with Kestra in 4 minutes.</i></p>
 
 
-# Kestra Plugin Template
+# Kestra Apify Plugin
 
-> A template for creating Kestra plugins
+> Orchestrate [Apify](https://apify.com/) web scraping and automation actors directly from your Kestra workflows. Extract web data at scale and integrate it into your data pipelines.
 
 ![Kestra orchestrator](https://kestra.io/video.gif)
 
