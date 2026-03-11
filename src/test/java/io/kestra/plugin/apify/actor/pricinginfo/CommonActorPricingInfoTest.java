@@ -1,6 +1,7 @@
 package io.kestra.plugin.apify.actor.pricinginfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.kestra.core.serializers.JacksonMapper;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,17 +9,17 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract class CommonActorPricingInfoTest {
     protected static final ObjectMapper objectMapper = JacksonMapper.ofJson(false);
     private static final String BASE_JSON_TEMPLATE = """
-            {
-                "pricingModel": "[PRICING_MODEL]",
-                "apifyMarginPercentage": 0.1,
-                "createdAt": "2023-10-01T00:00:00Z",
-                "startedAt": "2023-10-01T00:00:00Z",
-                "notifiedAboutFutureChangeAt": "2025-07-05T12:05:00.000Z",
-                "notifiedAboutChangeAt": "2025-06-05T12:05:00.000Z",
-                "reasonForChange": "reasonForChange", [IMPLEMENTATION_SPECIFIC_PROPERTIES]
-                ,"unknownProperty": "should be ignored"
-            }
-            """;
+        {
+            "pricingModel": "[PRICING_MODEL]",
+            "apifyMarginPercentage": 0.1,
+            "createdAt": "2023-10-01T00:00:00Z",
+            "startedAt": "2023-10-01T00:00:00Z",
+            "notifiedAboutFutureChangeAt": "2025-07-05T12:05:00.000Z",
+            "notifiedAboutChangeAt": "2025-06-05T12:05:00.000Z",
+            "reasonForChange": "reasonForChange", [IMPLEMENTATION_SPECIFIC_PROPERTIES]
+            ,"unknownProperty": "should be ignored"
+        }
+        """;
 
     void testPricePerEventActorPricingInfoDeserialization(CommonActorPricingInfo commonActorPricingInfo) {
         assertEquals(getPricingModel(), commonActorPricingInfo.getPricingModel());
@@ -41,9 +42,9 @@ abstract class CommonActorPricingInfoTest {
 
     protected abstract void testDeserialization() throws Exception;
 
-
     /**
      * Tests the serialization and deserialization of the CommonActorPricingInfo object.
+     * 
      * @param clazz The class of the CommonActorPricingInfo object to test.
      */
     protected <T extends CommonActorPricingInfo> void testSerialization(Class<T> clazz) throws Exception {
@@ -61,12 +62,12 @@ abstract class CommonActorPricingInfoTest {
 
     /**
      * @return Returns implementation specific properties as a JSON string without brackets.
-     * If the implementation does not have any implementation specific properties, return null.
+     *         If the implementation does not have any implementation specific properties, return null.
      */
     abstract protected String getImplementationSpecificProperties();
 
     protected String getJson() {
-        String json =  BASE_JSON_TEMPLATE
+        String json = BASE_JSON_TEMPLATE
             .replace("[PRICING_MODEL]", getPricingModel());
 
         if (getImplementationSpecificProperties() == null) {

@@ -1,10 +1,11 @@
 package io.kestra.plugin.apify.actor.pricinginfo;
 
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.Optional;
 
 @Data
 @AllArgsConstructor

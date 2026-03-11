@@ -1,8 +1,8 @@
 package io.kestra.plugin.apify.actor;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties
 public class ActorRunOptions {

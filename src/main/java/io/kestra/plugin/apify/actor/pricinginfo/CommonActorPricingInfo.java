@@ -1,20 +1,22 @@
 package io.kestra.plugin.apify.actor.pricinginfo;
 
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import lombok.Data;
 
-import java.util.Optional;
-
-
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "pricingModel", visible = true)
-@JsonSubTypes({
-    @JsonSubTypes.Type(value = PricePerEventActorPricingInfo.class, name = "PAY_PER_EVENT"),
-    @JsonSubTypes.Type(value = PricePerDatasetItemActorPricingInfo.class, name = "PRICE_PER_DATASET_ITEM"),
-    @JsonSubTypes.Type(value = FlatPricePerMonthActorPricingInfo.class, name = "FLAT_PRICE_PER_MONTH"),
-    @JsonSubTypes.Type(value = FreeActorPricingInfo.class, name = "FREE")
-})
+@JsonSubTypes(
+    {
+        @JsonSubTypes.Type(value = PricePerEventActorPricingInfo.class, name = "PAY_PER_EVENT"),
+        @JsonSubTypes.Type(value = PricePerDatasetItemActorPricingInfo.class, name = "PRICE_PER_DATASET_ITEM"),
+        @JsonSubTypes.Type(value = FlatPricePerMonthActorPricingInfo.class, name = "FLAT_PRICE_PER_MONTH"),
+        @JsonSubTypes.Type(value = FreeActorPricingInfo.class, name = "FREE")
+    }
+)
 @Data
 @JsonIgnoreProperties
 public abstract class CommonActorPricingInfo {

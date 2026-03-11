@@ -1,19 +1,20 @@
 package io.kestra.plugin.apify.dataset;
 
+import java.util.Collection;
+import java.util.List;
+
 import io.kestra.core.http.HttpRequest;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
-import java.util.Collection;
-import java.util.List;
 
 @SuperBuilder
 @ToString
@@ -30,37 +31,37 @@ import java.util.List;
             title = "Get dataset with a given id.",
             full = true,
             code = """
-                   id: apify_get_dataset_flow_required_properties
-                   namespace: company.team
+                id: apify_get_dataset_flow_required_properties
+                namespace: company.team
 
-                   tasks:
-                     - id: list_runs
-                       type: io.kestra.plugin.apify.dataset.Get
-                       apiToken: "{{ secret('APIFY_API_TOKEN') }}"
-                       datasetId: mecGriFjtDHRNtYOZ
-                   """
+                tasks:
+                  - id: list_runs
+                    type: io.kestra.plugin.apify.dataset.Get
+                    apiToken: "{{ secret('APIFY_API_TOKEN') }}"
+                    datasetId: mecGriFjtDHRNtYOZ
+                """
         ),
         @Example(
             title = "Get dataset with a given id and specific options.",
             full = true,
             code = """
-                   id: apify_get_dataset_flow
-                   namespace: company.team
+                id: apify_get_dataset_flow
+                namespace: company.team
 
-                   tasks:
-                     - id: list_runs
-                       type: io.kestra.plugin.apify.dataset.Get
-                       apiToken: "{{ secret('APIFY_API_TOKEN') }}"
-                       datasetId: RNtYOZmecGriFjtDH
-                       clean: false
-                       offset: 1
-                       limit: 10
-                       fields: userId, #id, #createdAt, postMeta
-                       omit: #id
-                       flatten: postMeta
-                       sort: ASC
-                       skipEmpty: false
-                   """
+                tasks:
+                  - id: list_runs
+                    type: io.kestra.plugin.apify.dataset.Get
+                    apiToken: "{{ secret('APIFY_API_TOKEN') }}"
+                    datasetId: RNtYOZmecGriFjtDH
+                    clean: false
+                    offset: 1
+                    limit: 10
+                    fields: userId, #id, #createdAt, postMeta
+                    omit: #id
+                    flatten: postMeta
+                    sort: ASC
+                    skipEmpty: false
+                """
         )
     }
 )

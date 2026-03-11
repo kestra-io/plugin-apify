@@ -1,24 +1,5 @@
 package io.kestra.plugin.apify;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.kestra.core.exceptions.IllegalVariableEvaluationException;
-import io.kestra.core.http.HttpRequest;
-import io.kestra.core.http.HttpResponse;
-import io.kestra.core.http.client.HttpClient;
-import io.kestra.core.http.client.configurations.HttpConfiguration;
-import io.kestra.core.models.annotations.Plugin;
-import io.kestra.core.models.property.Property;
-import io.kestra.core.models.tasks.Task;
-import io.kestra.core.runners.RunContext;
-import io.kestra.core.serializers.JacksonMapper;
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -29,6 +10,27 @@ import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.kestra.core.exceptions.IllegalVariableEvaluationException;
+import io.kestra.core.http.HttpRequest;
+import io.kestra.core.http.HttpResponse;
+import io.kestra.core.http.client.HttpClient;
+import io.kestra.core.http.client.configurations.HttpConfiguration;
+import io.kestra.core.models.annotations.Plugin;
+import io.kestra.core.models.property.Property;
+import io.kestra.core.models.tasks.Task;
+import io.kestra.core.runners.RunContext;
+import io.kestra.core.serializers.JacksonMapper;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @ToString
@@ -61,7 +63,8 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     protected String addQueryParams(String basePath, Map<String, ?> queryParams) {
         StringBuilder urlBuilder = new StringBuilder(basePath);
         Map<String, ?> sortedQueryParams = new TreeMap<>(queryParams);
-        sortedQueryParams.forEach((key, value) -> {
+        sortedQueryParams.forEach((key, value) ->
+        {
             urlBuilder.append(urlBuilder.indexOf("?") == -1 ? "?" : "&");
             urlBuilder.append(key).append("=").append(encodeValue(value.toString()));
         });
@@ -108,7 +111,8 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     }
 
     private static Consumer<HttpResponse<InputStream>> getWriteHttpResponseToTempFileConsumer(RunContext runContext, CompletableFuture<URI> completableFuture) {
-        return (HttpResponse<InputStream> response) -> {
+        return (HttpResponse<InputStream> response) ->
+        {
             if (response.getStatus().getCode() != 200) {
                 completableFuture.completeExceptionally(new Exception("Received non-200 response from Apify API: " + response.getStatus().getCode()));
                 return;
@@ -157,7 +161,7 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     /**
      * Creates a DELETE request builder with authentication and headers
      */
-    protected HttpRequest.HttpRequestBuilder buildDeleteRequest(String url)  {
+    protected HttpRequest.HttpRequestBuilder buildDeleteRequest(String url) {
         return getBaseHttpRequestBuilder()
             .uri(URI.create(getBaseUrl() + "/" + url))
             .method("DELETE");

@@ -1,5 +1,12 @@
 package io.kestra.plugin.apify.dataset;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
+
 import io.kestra.core.exceptions.IllegalVariableEvaluationException;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.retrys.Exponential;
@@ -7,17 +14,11 @@ import io.kestra.core.runners.RunContext;
 import io.kestra.core.utils.RetryUtils;
 import io.kestra.plugin.apify.ApifyConnection;
 import io.kestra.plugin.apify.ApifySortDirection;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Predicate;
 
 @SuperBuilder
 @ToString
@@ -31,7 +32,6 @@ public abstract class AbstractGetDataset extends ApifyConnection {
     )
     @NotNull
     private Property<String> datasetId;
-
 
     @Schema(
         title = "Clean items",
@@ -113,7 +113,6 @@ public abstract class AbstractGetDataset extends ApifyConnection {
     @Builder.Default
     private Property<Boolean> skipHidden = Property.ofValue(false);
 
-
     @Schema(
         title = "Simplified output",
         description = "Enable Apify simplified output mode; default false."
@@ -137,18 +136,20 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         List<String> rOmit = runContext.render(this.omit).asList(String.class);
         Optional<String> rView = runContext.render(this.view).as(String.class);
 
-        final Map<String, Object> queryParamValues = new HashMap<>(Map.of(
-            "cleanValue", runContext.render(this.clean).as(Boolean.class).orElse(true),
-            "offset", runContext.render(this.offset).as(Integer.class).orElse(0),
-            "sortDirection", runContext.render(this.sort).as(ApifySortDirection.class)
-                .orElse(ApifySortDirection.ASC) == ApifySortDirection.DESC,
-            "flatten", runContext.render(this.flatten).as(Boolean.class).orElse(false),
-            "skipEmpty", runContext.render(this.skipEmpty).as(Boolean.class).orElse(true),
-            "limit", runContext.render(this.limit).as(Integer.class).orElse(1000),
-            "simplified", runContext.render(this.simplified).as(Boolean.class).orElse(false),
-            "skipFailedPages", runContext.render(this.skipFailedPages).as(Boolean.class).orElse(false),
-            "skipHidden", runContext.render(this.skipHidden).as(Boolean.class).orElse(false)
-        ));
+        final Map<String, Object> queryParamValues = new HashMap<>(
+            Map.of(
+                "cleanValue", runContext.render(this.clean).as(Boolean.class).orElse(true),
+                "offset", runContext.render(this.offset).as(Integer.class).orElse(0),
+                "sortDirection", runContext.render(this.sort).as(ApifySortDirection.class)
+                    .orElse(ApifySortDirection.ASC) == ApifySortDirection.DESC,
+                "flatten", runContext.render(this.flatten).as(Boolean.class).orElse(false),
+                "skipEmpty", runContext.render(this.skipEmpty).as(Boolean.class).orElse(true),
+                "limit", runContext.render(this.limit).as(Integer.class).orElse(1000),
+                "simplified", runContext.render(this.simplified).as(Boolean.class).orElse(false),
+                "skipFailedPages", runContext.render(this.skipFailedPages).as(Boolean.class).orElse(false),
+                "skipHidden", runContext.render(this.skipHidden).as(Boolean.class).orElse(false)
+            )
+        );
 
         if (!rFields.isEmpty()) {
             queryParamValues.put("fields", String.join(",", rFields));
@@ -171,8 +172,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
     protected <T> T withRetry(
         RunContext runContext,
         Predicate<T> retryIfPredicate,
-        RetryUtils.CheckedSupplier<T> run
-    ) throws Exception {
+        RetryUtils.CheckedSupplier<T> run) throws Exception {
         Exponential.ExponentialBuilder<?, ?> builder = Exponential.builder()
             .delayFactor(2.0)
             .interval(Duration.ofSeconds(2))
@@ -182,18 +182,21 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         Duration timeout = runContext.render(this.timeout).as(Duration.class).orElse(null);
         builder.maxDuration(timeout != null ? timeout : DEFAULT_TIMEOUT_DURATION);
 
-
-        return RetryUtils.<T, Exception>of(
+        return RetryUtils.<T, Exception> of(
             builder.build(),
-            (RetryUtils.RetryFailed retryFailed) -> {
-                throw new IllegalStateException("Timeout reached before dataset was available, please try again " +
-                    "later or increase the timeout duration of the task.");
+            (RetryUtils.RetryFailed retryFailed) ->
+            {
+                throw new IllegalStateException(
+                    "Timeout reached before dataset was available, please try again " +
+                        "later or increase the timeout duration of the task."
+                );
             }
         ).run(retryLoggerWrapper(retryIfPredicate, runContext), run);
     }
 
     private static <T> Predicate<T> retryLoggerWrapper(Predicate<T> retryIfPredicate, RunContext runContext) {
-        return (T value) -> {
+        return (T value) ->
+        {
             boolean retry = retryIfPredicate.test(value);
             if (retry) {
                 runContext.logger().debug("Received empty dataset.");

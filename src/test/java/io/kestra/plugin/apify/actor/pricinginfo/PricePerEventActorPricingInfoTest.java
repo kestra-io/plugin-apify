@@ -43,12 +43,16 @@ class PricePerEventActorPricingInfoTest extends CommonActorPricingInfoTest {
         assertEquals(50.0, pricingInfo.getMinimalMaxTotalChargeUsd().get());
 
         assertTrue(pricingInfo.getPricingPerEvent().getActorChargeEvents().containsKey("keyOne"));
-        assertEquals(new ActorChargeEvent(0.5, "keyOneEventTitle", "keyOneEventDescription"),
-            pricingInfo.getPricingPerEvent().getActorChargeEvents().get("keyOne"));
+        assertEquals(
+            new ActorChargeEvent(0.5, "keyOneEventTitle", "keyOneEventDescription"),
+            pricingInfo.getPricingPerEvent().getActorChargeEvents().get("keyOne")
+        );
 
         assertTrue(pricingInfo.getPricingPerEvent().getActorChargeEvents().containsKey("keyTwo"));
-        assertEquals(new ActorChargeEvent(0.5, "keyTwoEventTitle", "keyTwoEventDescription"),
-            pricingInfo.getPricingPerEvent().getActorChargeEvents().get("keyTwo"));
+        assertEquals(
+            new ActorChargeEvent(0.5, "keyTwoEventTitle", "keyTwoEventDescription"),
+            pricingInfo.getPricingPerEvent().getActorChargeEvents().get("keyTwo")
+        );
     }
 
     @Test

@@ -7,6 +7,7 @@ public enum DataSetFormat {
     CSV("csv"),
     XLSX("xlsx"),
     RSS("rss");
+
     DataSetFormat(String format) {
 
     }

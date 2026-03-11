@@ -9,6 +9,7 @@ import io.kestra.core.runners.RunContext;
 import io.kestra.plugin.apify.ApifyConnection;
 import io.kestra.plugin.apify.actor.ActorRun;
 import io.kestra.plugin.apify.actor.ActorRunApiResponseWrapper;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -29,15 +30,15 @@ import lombok.experimental.SuperBuilder;
             title = "Get details about the last actor run of given actor id.",
             full = true,
             code = """
-                   id: get_last_run
-                   namespace: company.team
+                id: get_last_run
+                namespace: company.team
 
-                   tasks:
-                     - id: list_runs
-                       type: io.kestra.plugin.apify.dataset.GetLastRun
-                       apiToken: "{{ secret('APIFY_API_TOKEN') }}"
-                       actorId: GdWCkxBtKWOsKjdch
-                   """
+                tasks:
+                  - id: list_runs
+                    type: io.kestra.plugin.apify.dataset.GetLastRun
+                    apiToken: "{{ secret('APIFY_API_TOKEN') }}"
+                    actorId: GdWCkxBtKWOsKjdch
+                """
         )
     }
 )
@@ -48,7 +49,6 @@ public class GetLastRun extends ApifyConnection implements RunnableTask<ActorRun
     )
     @NotNull
     private Property<String> actorId;
-
 
     @Override
     public ActorRun run(RunContext runContext) throws Exception {

@@ -1,5 +1,12 @@
 package io.kestra.plugin.apify.actor;
 
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.kestra.core.http.HttpRequest;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
@@ -7,6 +14,7 @@ import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
 import io.kestra.plugin.apify.ApifyConnection;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
@@ -14,12 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @SuperBuilder
 @ToString
@@ -36,20 +38,20 @@ import java.util.stream.Collectors;
             title = "Save dataset with given id as temp file.",
             full = true,
             code = """
-                    id: run_actor
-                    namespace: company.team
+                 id: run_actor
+                 namespace: company.team
 
-                    tasks:
-                      - id: run_actor
-                        type: io.kestra.plugin.apify.actor.Run
-                        actorId: GdWCkxBtKWOsKjdch
-                        maxItems: 1
-                        apiToken: "{{ secret('APIFY_API_TOKEN') }}"
-                        input:
-                          excludePinnedPosts: false
-                          hashtags: ["fyp"]
-                          resultsPerPage: 2
-                   """
+                 tasks:
+                   - id: run_actor
+                     type: io.kestra.plugin.apify.actor.Run
+                     actorId: GdWCkxBtKWOsKjdch
+                     maxItems: 1
+                     apiToken: "{{ secret('APIFY_API_TOKEN') }}"
+                     input:
+                       excludePinnedPosts: false
+                       hashtags: ["fyp"]
+                       resultsPerPage: 2
+                """
         )
     }
 )
@@ -130,16 +132,17 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
 
         Map<String, ?> filteredQueryParams = queryParams.entrySet().stream().filter(
             queryParamsEntry -> queryParamsEntry.getValue().isPresent()
-        ).collect(Collectors.toMap(
-            Map.Entry::getKey,
-            entry -> entry.getValue().get()
-        ));
+        ).collect(
+            Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> entry.getValue().get()
+            )
+        );
 
         HttpRequest.HttpRequestBuilder requestBuilder = buildPostRequest(
             addQueryParams(String.format("acts/%s/runs", rActorId), filteredQueryParams),
             rInput
         );
-
 
         return makeCall(
             runContext, requestBuilder, ActorRunApiResponseWrapper.class

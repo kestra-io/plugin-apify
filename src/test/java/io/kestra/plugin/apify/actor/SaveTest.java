@@ -1,5 +1,13 @@
 package io.kestra.plugin.apify.actor;
 
+import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.time.Duration;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
 import io.kestra.core.junit.annotations.KestraTest;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.runners.RunContext;
@@ -9,14 +17,8 @@ import io.kestra.plugin.apify.ApifySortDirection;
 import io.kestra.plugin.apify.DataSetFormat;
 import io.kestra.plugin.apify.dataset.Get;
 import io.kestra.plugin.apify.dataset.Save;
-import jakarta.inject.Inject;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import java.io.ByteArrayInputStream;
-import java.net.URI;
-import java.time.Duration;
-import java.util.List;
+import jakarta.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -103,10 +105,12 @@ class SaveTest {
 
         // Assert that optional value with default values are set
         String uri = getStructuredDataset.buildURL(runContextFactory.of());
-        assertThat(uri,
-            equalTo("/datasets/DATASET_ID/items?cleanValue=true&flatten=false&limit=1000&offset=0" +
-                "&simplified=false&skipEmpty=true&skipFailedPages=false&skipHidden=false&sortDirection=false" +
-                "&delimiter=%2C&format=json&skipHeaderRow=false&xmlRoot=items&xmlRow=item"
+        assertThat(
+            uri,
+            equalTo(
+                "/datasets/DATASET_ID/items?cleanValue=true&flatten=false&limit=1000&offset=0" +
+                    "&simplified=false&skipEmpty=true&skipFailedPages=false&skipHidden=false&sortDirection=false" +
+                    "&delimiter=%2C&format=json&skipHeaderRow=false&xmlRoot=items&xmlRow=item"
             )
         );
     }
@@ -141,11 +145,13 @@ class SaveTest {
 
         String uri = getStructuredDataset.buildURL(runContextFactory.of());
         // Assert that all values are set
-        assertThat(uri,
-            equalTo("/datasets/DATASET_ID/items?cleanValue=true&fields=userId%2C%23id%2C%23createdAt%2CpostMeta" +
-                "&flatten=true&limit=10&offset=1&omit=%23id&simplified=true&skipEmpty=true&skipFailedPages=true" +
-                "&skipHidden=true&sortDirection=false&unwind=postMeta&view=DUMMY_VIEW_VALUE&bom=true&delimiter=%2C+" +
-                "&format=csv&skipHeaderRow=true&xmlRoot=xmlRoot&xmlRow=xmlRow"
+        assertThat(
+            uri,
+            equalTo(
+                "/datasets/DATASET_ID/items?cleanValue=true&fields=userId%2C%23id%2C%23createdAt%2CpostMeta" +
+                    "&flatten=true&limit=10&offset=1&omit=%23id&simplified=true&skipEmpty=true&skipFailedPages=true" +
+                    "&skipHidden=true&sortDirection=false&unwind=postMeta&view=DUMMY_VIEW_VALUE&bom=true&delimiter=%2C+" +
+                    "&format=csv&skipHeaderRow=true&xmlRoot=xmlRoot&xmlRow=xmlRow"
             )
         );
     }

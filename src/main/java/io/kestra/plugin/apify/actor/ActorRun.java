@@ -1,12 +1,14 @@
 package io.kestra.plugin.apify.actor;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import io.kestra.core.models.tasks.Output;
-import io.kestra.plugin.apify.actor.pricinginfo.CommonActorPricingInfo;
-import lombok.Data;
-
 import java.util.Map;
 import java.util.Optional;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import io.kestra.core.models.tasks.Output;
+import io.kestra.plugin.apify.actor.pricinginfo.CommonActorPricingInfo;
+
+import lombok.Data;
 
 @Data
 @JsonIgnoreProperties

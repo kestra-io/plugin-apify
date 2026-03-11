@@ -1,14 +1,16 @@
 package io.kestra.plugin.apify;
 
-import io.kestra.core.http.HttpRequest;
 import org.junit.jupiter.api.Test;
+
+import io.kestra.core.http.HttpRequest;
 
 import static io.kestra.plugin.apify.ApifyConnection.INTEGRATION_HEADER;
 import static io.kestra.plugin.apify.ApifyConnection.INTEGRATION_VALUE;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ApifyConnectionTest {
-    ApifyConnection apifyConnection = new ApifyConnection(){};
+    ApifyConnection apifyConnection = new ApifyConnection() {
+    };
 
     @Test
     void givenGetRequest_whenBuilt_thenIncludesIntegrationPlatformHeader() {
