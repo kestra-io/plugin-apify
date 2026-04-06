@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import io.kestra.core.http.HttpRequest;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
+import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
@@ -22,7 +23,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -81,10 +81,10 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
 
     @Schema(
         title = "Memory (MB)",
-        description = "Memory limit in megabytes (powers of two, minimum 128); uses actor default when omitted."
+        description = "Memory allocation for the run; must be a power of two between 128 MB and 32768 MB."
     )
     @PluginProperty(group = "execution")
-    private Property<Double> memory;
+    private Property<MemoryMbytes> memory;
 
     @Schema(
         title = "Max items",
@@ -132,7 +132,7 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
         Map<String, Object> rInput = runContext.render(this.input).asMap(String.class, Object.class);
         Map<String, Optional<?>> queryParams = Map.of(
             "timeout", runContext.render(this.requestTimeout).as(Double.class),
-            "memory", runContext.render(this.memory).as(Double.class),
+            "memory", runContext.render(this.memory).as(MemoryMbytes.class).map(MemoryMbytes::getValue),
             "maxItems", runContext.render(this.maxItems).as(Integer.class),
             "maxTotalChargeUsd", runContext.render(this.maxTotalChargeUsd).as(Double.class),
             "build", runContext.render(this.build).as(String.class),

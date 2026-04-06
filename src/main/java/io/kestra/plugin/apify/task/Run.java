@@ -13,6 +13,7 @@ import io.kestra.core.runners.RunContext;
 import io.kestra.plugin.apify.ApifyConnection;
 import io.kestra.plugin.apify.actor.ActorRun;
 import io.kestra.plugin.apify.actor.ActorRunApiResponseWrapper;
+import io.kestra.plugin.apify.actor.MemoryMbytes;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -93,9 +94,9 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
 
     @Schema(
         title = "Memory (MB)",
-        description = "Memory limit in megabytes (powers of two, minimum 128); uses task default when omitted."
+        description = "Memory allocation for the run; must be a power of two between 128 MB and 32768 MB."
     )
-    private Property<Integer> memory;
+    private Property<MemoryMbytes> memory;
 
     @Schema(
         title = "Max items",
@@ -136,7 +137,7 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
         var rInput = runContext.render(this.input).asMap(String.class, Object.class);
         Map<String, Optional<?>> queryParams = Map.of(
             "timeout", runContext.render(this.requestTimeout).as(Double.class),
-            "memory", runContext.render(this.memory).as(Integer.class),
+            "memory", runContext.render(this.memory).as(MemoryMbytes.class),
             "maxItems", runContext.render(this.maxItems).as(Integer.class),
             "maxTotalChargeUsd", runContext.render(this.maxTotalChargeUsd).as(Double.class),
             "build", runContext.render(this.build).as(String.class),
