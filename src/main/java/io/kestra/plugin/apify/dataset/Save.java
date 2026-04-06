@@ -21,6 +21,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import io.kestra.core.models.annotations.PluginProperty;
 
+@Deprecated
 @SuperBuilder
 @ToString
 @EqualsAndHashCode
@@ -28,7 +29,13 @@ import io.kestra.core.models.annotations.PluginProperty;
 @NoArgsConstructor
 @Schema(
     title = "Save Apify dataset to temp file",
-    description = "Downloads dataset items to Kestra temp storage with short polling and exponential backoff until data appears or the 300s timeout is reached. Retries on empty responses while the actor finishes writing."
+    description = """
+        Deprecated: actors automatically save their output to a dataset, so this task is no longer necessary.
+        Use `dataset.Get` or `dataset.GetLastRun` instead to retrieve the dataset directly after the actor run.
+
+        Downloads dataset items to Kestra temp storage with short polling and exponential backoff until data appears or the 300s timeout is reached.
+        Retries on empty responses while the actor finishes writing.
+        """
 )
 @Plugin(
     examples = {
