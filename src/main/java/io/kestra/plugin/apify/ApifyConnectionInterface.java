@@ -8,7 +8,8 @@ import io.kestra.core.models.annotations.PluginProperty;
 public interface ApifyConnectionInterface {
     @Schema(
         title = "Apify API token",
-        description = "Personal Apify API token used for all requests; required."
+        description = "Personal Apify API token used for all requests; required.",
+        format = "password"
     )
     @PluginProperty(group = "connection")
     Property<String> getApiToken();
