@@ -22,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -61,54 +62,63 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
         description = "Actor ID or owner~actor name to execute."
     )
     @NotNull
+    @PluginProperty(group = "main")
     private Property<String> actorId;
 
     @Schema(
         title = "Input",
         description = "JSON payload passed to the actor; omitted when empty so the actor uses its default input."
     )
+    @PluginProperty(group = "main")
     private Property<Map<String, Object>> input;
 
     @Schema(
         title = "Timeout (seconds)",
         description = "Actor run timeout override in seconds; falls back to the actor's default if unset."
     )
+    @PluginProperty(group = "execution")
     private Property<Double> requestTimeout;
 
     @Schema(
         title = "Memory (MB)",
         description = "Memory limit in megabytes (powers of two, minimum 128); uses actor default when omitted."
     )
+    @PluginProperty(group = "execution")
     private Property<Double> memory;
 
     @Schema(
         title = "Max items",
         description = "Cap number of items returned to control pay-per-result charges."
     )
+    @PluginProperty(group = "advanced")
     private Property<Integer> maxItems;
 
     @Schema(
         title = "Max total charge (USD)",
         description = "Maximum allowed cost for the run; stops charges beyond this ceiling."
     )
+    @PluginProperty(group = "destination")
     private Property<Double> maxTotalChargeUsd;
 
     @Schema(
         title = "Build",
         description = "Build tag or number to run; defaults to the actor's configured build (typically latest)."
     )
+    @PluginProperty(group = "advanced")
     private Property<String> build;
 
     @Schema(
         title = "Wait for finish (seconds)",
         description = "Seconds to wait synchronously for completion (0–60); default 0 returns a transitional status if still running."
     )
+    @PluginProperty(group = "execution")
     private Property<Double> waitForFinish;
 
     @Schema(
         title = "Webhooks",
         description = "Base64-encoded JSON array describing webhooks for lifecycle events."
     )
+    @PluginProperty(group = "advanced")
     private Property<String> webhooks;
 
     private static final Logger log = LoggerFactory.getLogger(Run.class);

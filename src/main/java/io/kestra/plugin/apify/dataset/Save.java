@@ -19,6 +19,7 @@ import io.kestra.plugin.apify.DataSetFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -73,6 +74,7 @@ public class Save extends AbstractGetDataset implements RunnableTask<Save.Output
         description = "Dataset export format; defaults to JSON."
     )
     @Builder.Default
+    @PluginProperty(group = "processing")
     private Property<DataSetFormat> format = Property.ofValue(DataSetFormat.JSON);
 
     @Schema(
@@ -80,12 +82,14 @@ public class Save extends AbstractGetDataset implements RunnableTask<Save.Output
         description = "CSV delimiter when format is CSV; ignored otherwise."
     )
     @Builder.Default
+    @PluginProperty(group = "processing")
     private Property<String> delimiter = Property.ofValue(",");
 
     @Schema(
         title = "Include BOM",
         description = "Force UTF-8 BOM for text outputs; Apify adds it to CSV by default and omits for JSON/JSONL/XML/HTML/RSS unless overridden."
     )
+    @PluginProperty(group = "advanced")
     private Property<Boolean> bom;
 
     @Schema(
@@ -93,6 +97,7 @@ public class Save extends AbstractGetDataset implements RunnableTask<Save.Output
         description = "Root element name for XML output; defaults to items."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<String> xmlRoot = Property.ofValue("items");
 
     @Schema(
@@ -100,6 +105,7 @@ public class Save extends AbstractGetDataset implements RunnableTask<Save.Output
         description = "Element name for each record in XML output; defaults to item."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<String> xmlRow = Property.ofValue("item");
 
     @Schema(
@@ -107,6 +113,7 @@ public class Save extends AbstractGetDataset implements RunnableTask<Save.Output
         description = "Omit CSV header row when true; default false."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<Boolean> skipHeaderRow = Property.ofValue(false);
 
     private static final byte[] EMPTY_DATASET_BYTES = "[]".getBytes();
