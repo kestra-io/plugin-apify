@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -31,6 +32,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Apify dataset identifier to read items from."
     )
     @NotNull
+    @PluginProperty(group = "main")
     private Property<String> datasetId;
 
     @Schema(
@@ -38,6 +40,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Skip empty records and fields prefixed with # when true; default true."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<Boolean> clean = Property.ofValue(true);
 
     @Schema(
@@ -45,6 +48,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Number of leading items to skip; default 0."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<Integer> offset = Property.ofValue(0);
 
     @Schema(
@@ -52,24 +56,28 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Maximum items to return; defaults to 1000."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<Integer> limit = Property.ofValue(1000);
 
     @Schema(
         title = "Fields",
         description = "Comma-separated fields to keep in each item; others are dropped."
     )
+    @PluginProperty(group = "advanced")
     private Property<List<String>> fields;
 
     @Schema(
         title = "Omit",
         description = "Comma-separated fields to remove from each item."
     )
+    @PluginProperty(group = "advanced")
     private Property<List<String>> omit;
 
     @Schema(
         title = "Unwind fields",
         description = "Fields to unwind in order; array elements become separate records, objects merge into parents. Unwound items ignore the sortDirection flag."
     )
+    @PluginProperty(group = "advanced")
     private Property<List<String>> unwind;
 
     @Schema(
@@ -77,6 +85,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Fields to flatten into dotted keys (foo.bar) instead of nested objects."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<Boolean> flatten = Property.ofValue(false);
 
     @Schema(
@@ -84,6 +93,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Set to DESC to return newest items first; default ASC."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<ApifySortDirection> sort = Property.ofValue(ApifySortDirection.ASC);
 
     @Schema(
@@ -91,6 +101,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Drop empty records when true; default true."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<Boolean> skipEmpty = Property.ofValue(true);
 
     @Schema(
@@ -98,12 +109,14 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Skip items containing errorInfo when true; default false."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<Boolean> skipFailedPages = Property.ofValue(false);
 
     @Schema(
         title = "View",
         description = "Dataset view name to filter and project items per the Apify schema."
     )
+    @PluginProperty(group = "advanced")
     private Property<String> view;
 
     @Schema(
@@ -111,6 +124,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Skip fields prefixed with # when true; default false."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<Boolean> skipHidden = Property.ofValue(false);
 
     @Schema(
@@ -118,6 +132,7 @@ public abstract class AbstractGetDataset extends ApifyConnection {
         description = "Enable Apify simplified output mode; default false."
     )
     @Builder.Default
+    @PluginProperty(group = "advanced")
     private Property<Boolean> simplified = Property.ofValue(false);
 
     @Builder.Default
