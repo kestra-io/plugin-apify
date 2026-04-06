@@ -109,10 +109,10 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
 
     @Schema(
         title = "Wait for finish (seconds)",
-        description = "Seconds to wait synchronously for completion (0–60); default 0 returns a transitional status if still running."
+        description = "Seconds to wait synchronously for the run to complete (0–60); 0 returns immediately with a transitional status if still running. Maximum is 60 seconds."
     )
     @PluginProperty(group = "execution")
-    private Property<Double> waitForFinish;
+    private Property<Integer> waitForFinish;
 
     @Schema(
         title = "Webhooks",
@@ -136,7 +136,7 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
             "maxItems", runContext.render(this.maxItems).as(Integer.class),
             "maxTotalChargeUsd", runContext.render(this.maxTotalChargeUsd).as(Double.class),
             "build", runContext.render(this.build).as(String.class),
-            "waitForFinish", runContext.render(this.waitForFinish).as(Double.class),
+            "waitForFinish", runContext.render(this.waitForFinish).as(Integer.class),
             "webhooks", runContext.render(this.webhooks).as(String.class)
         );
 
