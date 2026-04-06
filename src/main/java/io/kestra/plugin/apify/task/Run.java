@@ -16,6 +16,8 @@ import io.kestra.plugin.apify.actor.ActorRunApiResponseWrapper;
 import io.kestra.plugin.apify.actor.MemoryMbytes;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -120,7 +122,7 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
         title = "Wait for finish (seconds)",
         description = "Seconds to wait synchronously for the run to complete (0–60); 0 returns immediately with a transitional status if still running. Maximum is 60 seconds."
     )
-    private Property<Integer> waitForFinish;
+    private Property<@Min(0) @Max(60) Integer> waitForFinish;
 
     @Schema(
         title = "Webhooks",
