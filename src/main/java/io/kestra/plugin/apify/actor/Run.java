@@ -120,7 +120,7 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
         title = "Webhooks",
         description = "Base64-encoded JSON array describing webhooks for lifecycle events."
     )
-    @PluginProperty(group = "advanced")
+    @PluginProperty(group = "advanced", secret = true)
     private Property<String> webhooks;
 
     private static final Logger log = LoggerFactory.getLogger(Run.class);
