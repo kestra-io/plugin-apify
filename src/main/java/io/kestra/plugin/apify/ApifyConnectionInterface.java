@@ -10,6 +10,6 @@ public interface ApifyConnectionInterface {
         title = "Apify API token",
         description = "Personal Apify API token used for all requests; required."
     )
-    @PluginProperty(group = "connection")
+    @PluginProperty(secret = true, group = "connection")
     Property<String> getApiToken();
 }
