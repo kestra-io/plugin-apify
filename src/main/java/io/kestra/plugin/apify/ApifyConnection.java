@@ -1,6 +1,5 @@
 package io.kestra.plugin.apify;
 
-import io.kestra.core.models.annotations.PluginProperty;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -51,7 +50,6 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     protected static final String INTEGRATION_HEADER = "x-apify-integration-platform";
 
     @NotNull
-    @PluginProperty(secret = true)
     private Property<String> apiToken;
 
     @Schema(title = "HTTP client options", description = "Optional HttpConfiguration applied to every Apify call, including timeouts, retries, and proxy settings.")
