@@ -135,9 +135,11 @@ public abstract class AbstractGetDataset extends ApifyConnection {
     @PluginProperty(group = "advanced")
     private Property<Boolean> simplified = Property.ofValue(false);
 
+    @Schema(title = "Maximum time to wait for dataset items before timing out")
     @Builder.Default
     protected Duration DEFAULT_TIMEOUT_DURATION = Duration.ofSeconds(300);
 
+    @Schema(title = "Maximum backoff interval between dataset polling attempts")
     @Builder.Default
     protected Duration DEFAULT_MAX_INTERVAL_DURATION = Duration.ofSeconds(32);
 

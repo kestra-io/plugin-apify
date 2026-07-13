@@ -161,6 +161,7 @@ public class Save extends AbstractGetDataset implements RunnableTask<Save.Output
     @Getter
     @AllArgsConstructor
     public static class Output implements io.kestra.core.models.tasks.Output {
+        @Schema(title = "URI of the stored dataset file in Kestra's internal storage")
         private URI path;
     }
 

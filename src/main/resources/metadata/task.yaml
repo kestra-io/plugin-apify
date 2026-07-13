@@ -1,0 +1,8 @@
+group: io.kestra.plugin.apify.task
+name: "task"
+title: "Apify Task"
+description: "Tasks that run a saved Apify Task and return its run payload."
+body: "Provide `taskId` and `apiToken` to start a saved Apify Task from a workflow. Optional input overrides and a synchronous wait let you tune each run and block until it finishes while receiving the resulting run payload."
+videos: []
+createdBy: "Kestra Core Team"
+managedBy: "Kestra Core Team"
