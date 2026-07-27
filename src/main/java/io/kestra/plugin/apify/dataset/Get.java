@@ -56,9 +56,14 @@ import lombok.experimental.SuperBuilder;
                     clean: false
                     offset: 1
                     limit: 10
-                    fields: userId, #id, #createdAt, postMeta
-                    omit: #id
-                    flatten: postMeta
+                    fields:
+                      - userId
+                      - "#id"
+                      - "#createdAt"
+                      - postMeta
+                    omit:
+                      - "#id"
+                    flatten: true
                     sort: ASC
                     skipEmpty: false
                 """

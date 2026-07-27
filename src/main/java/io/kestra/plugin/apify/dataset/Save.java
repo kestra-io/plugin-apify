@@ -54,7 +54,7 @@ import io.kestra.core.models.annotations.PluginProperty;
                 """
         ),
         @Example(
-            title = "Save dataset with given id as temp file.",
+            title = "Save a dataset as a CSV file.",
             full = true,
             code = """
                 id: save_data_set_to_csv_file
@@ -66,9 +66,14 @@ import io.kestra.core.models.annotations.PluginProperty;
                     apiToken: "{{ secret('APIFY_API_TOKEN') }}"
                     datasetId: RNtYOZmecGriFjtDH
                     format: CSV
-                    fields: userId, #id, #createdAt, postMeta
-                    omit: #id
-                    flatten: postMeta
+                    fields:
+                      - userId
+                      - "#id"
+                      - "#createdAt"
+                      - postMeta
+                    omit:
+                      - "#id"
+                    flatten: true
                     sort: ASC
                 """
         )

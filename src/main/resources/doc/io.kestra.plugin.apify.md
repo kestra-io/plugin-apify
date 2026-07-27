@@ -14,4 +14,4 @@ Set `apiToken` (required) to your Apify API token. Store secrets in [secrets](ht
 
 `dataset.Get` retrieves items from an Apify dataset — set `datasetId` (required). Control the result with `offset` (default 0), `limit` (default 1000), `fields` / `omit` (field filter lists), `clean` (default `true`), `sort` (default `ASC`), `flatten`, `skipEmpty` (default `true`), `skipHidden` (default `false`), `simplified` (default `false`), and `skipFailedPages` (default `false`). The output includes `dataset` (list of items).
 
-`dataset.GetLastRun` retrieves the dataset from the last run of an actor — set `actorId` (required). Returns a full `ActorRun` object.
+`dataset.GetLastRun` retrieves the most recent run of an actor — set `actorId` (required). Returns a full `ActorRun` object (the run detail, including `defaultDatasetId` to fetch its dataset).

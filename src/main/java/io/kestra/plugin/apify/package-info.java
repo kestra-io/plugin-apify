@@ -1,6 +1,6 @@
 @PluginSubGroup(
-    title = "Example plugin",
-    description = "A plugin to show how to build a plugin in Kestra.",
+    title = "Apify",
+    description = "Tasks to orchestrate Apify Actors, saved Tasks, and datasets from Kestra.",
     categories = {
         PluginSubGroup.PluginCategory.DATA
     }
