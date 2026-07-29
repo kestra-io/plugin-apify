@@ -38,7 +38,7 @@ import lombok.experimental.SuperBuilder;
 @Plugin(
     examples = {
         @Example(
-            title = "Save dataset with given id as temp file.",
+            title = "Run an Apify actor with input.",
             full = true,
             code = """
                  id: run_actor
