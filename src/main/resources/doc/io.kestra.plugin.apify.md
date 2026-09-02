@@ -4,7 +4,7 @@ Run Apify actors and tasks, and retrieve dataset results from Kestra flows.
 
 ## Authentication
 
-Set `apiToken` (required) to your Apify API token. Store secrets in [secrets](https://kestra.io/docs/concepts/secret) and apply connection properties globally with [plugin defaults](https://kestra.io/docs/workflow-components/plugin-defaults).
+Set `apiToken` (required) to your Apify API token. Store secrets in [secrets](https://kestra.io/docs/concepts/secret) and set connection properties on each task.
 
 ## Tasks
 
