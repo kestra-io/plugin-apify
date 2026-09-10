@@ -1,13 +1,16 @@
 package io.kestra.plugin.apify.actor;
 
+import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.kestra.core.http.HttpRequest;
+import com.apify.client.actor.ActorStartOptions;
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
 import io.kestra.core.models.annotations.PluginProperty;
@@ -132,32 +135,36 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
         );
 
         Map<String, Object> rInput = runContext.render(this.input).asMap(String.class, Object.class);
-        Map<String, Optional<?>> queryParams = Map.of(
-            "timeout", runContext.render(this.requestTimeout).as(Double.class),
-            "memory", runContext.render(this.memory).as(MemoryMbytes.class).map(MemoryMbytes::getValue),
-            "maxItems", runContext.render(this.maxItems).as(Integer.class),
-            "maxTotalChargeUsd", runContext.render(this.maxTotalChargeUsd).as(Double.class),
-            "build", runContext.render(this.build).as(String.class),
-            "waitForFinish", runContext.render(this.waitForFinish).as(Integer.class),
-            "webhooks", runContext.render(this.webhooks).as(String.class)
-        );
 
-        Map<String, ?> filteredQueryParams = queryParams.entrySet().stream().filter(
-            queryParamsEntry -> queryParamsEntry.getValue().isPresent()
-        ).collect(
-            Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> entry.getValue().get()
-            )
-        );
+        ActorStartOptions startOptions = new ActorStartOptions();
+        runContext.render(this.requestTimeout).as(Double.class)
+            .ifPresent(v -> startOptions.timeoutSecs(v.longValue()));
+        runContext.render(this.memory).as(MemoryMbytes.class).map(MemoryMbytes::getValue)
+            .ifPresent(v -> startOptions.memoryMbytes(((Number) v).longValue()));
+        runContext.render(this.maxItems).as(Integer.class)
+            .ifPresent(v -> startOptions.maxItems(v.longValue()));
+        runContext.render(this.maxTotalChargeUsd).as(Double.class)
+            .ifPresent(startOptions::maxTotalChargeUsd);
+        runContext.render(this.build).as(String.class)
+            .ifPresent(startOptions::build);
+        runContext.render(this.waitForFinish).as(Integer.class)
+            .ifPresent(v -> startOptions.waitForFinish(v.longValue()));
+        decodedWebhooks(runContext.render(this.webhooks).as(String.class).orElse(null))
+            .ifPresent(startOptions::webhooks);
 
-        HttpRequest.HttpRequestBuilder requestBuilder = buildPostRequest(
-            addQueryParams(String.format("acts/%s/runs", rActorId), filteredQueryParams),
-            rInput
+        return asPluginModel(
+            this.apifyClient(runContext).actor(rActorId).start(rInput, startOptions).join(),
+            ActorRun.class
         );
+    }
 
-        return makeCall(
-            runContext, requestBuilder, ActorRunApiResponseWrapper.class
-        ).getData();
+    /** `webhooks` is supplied Base64-encoded, the SDK takes the decoded list and encodes it again itself. */
+    private static Optional<List<Object>> decodedWebhooks(String encoded) throws Exception {
+        if (encoded == null || encoded.isBlank()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(mapper.readValue(Base64.getDecoder().decode(encoded), new TypeReference<List<Object>>() {
+        }));
     }
 }

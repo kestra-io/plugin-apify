@@ -38,6 +38,10 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add("-parameters")
 }
 
+configurations.all {
+    resolutionStrategy.force 'com.fasterxml.jackson.core:jackson-annotations:2.22'
+}
+
 dependencies {
     // Platform
     annotationProcessor enforcedPlatform("io.kestra:platform:$kestraVersion")
@@ -51,6 +55,9 @@ dependencies {
     annotationProcessor group: "io.kestra", name: "processor", version: kestraVersion
     compileOnly group: "io.kestra", name: "core", version: kestraVersion
     compileOnly group: "io.kestra", name: "script", version: kestraVersion
+
+    // Apify's official Java client. Brings Jackson 3 (tools.jackson), which coexists with Kestra's Jackson 2.
+    implementation group: 'com.apify', name: 'apify-client', version: '0.6.3'
 }
 
 

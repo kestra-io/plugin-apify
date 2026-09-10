@@ -1,20 +1,18 @@
 package io.kestra.plugin.apify.dataset;
 
-import io.kestra.core.http.HttpRequest;
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
+import io.kestra.core.models.annotations.PluginProperty;
 import io.kestra.core.models.property.Property;
 import io.kestra.core.models.tasks.RunnableTask;
 import io.kestra.core.runners.RunContext;
 import io.kestra.plugin.apify.ApifyConnection;
 import io.kestra.plugin.apify.actor.ActorRun;
-import io.kestra.plugin.apify.actor.ActorRunApiResponseWrapper;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import io.kestra.core.models.annotations.PluginProperty;
 
 @SuperBuilder
 @ToString
@@ -58,9 +56,13 @@ public class GetLastRun extends ApifyConnection implements RunnableTask<ActorRun
             () -> new IllegalArgumentException("actorId is required")
         );
 
-        HttpRequest.HttpRequestBuilder requestBuilder = buildGetRequest(
-            String.format("acts/%s/runs/last", rActorId)
-        );
-        return makeCall(runContext, requestBuilder, ActorRunApiResponseWrapper.class).getData();
+        var lastRun = this.apifyClient(runContext)
+            .actor(rActorId)
+            .lastRun((String) null)
+            .get()
+            .join()
+            .orElseThrow(() -> new IllegalStateException("Actor " + rActorId + " has no runs"));
+
+        return asPluginModel(lastRun, ActorRun.class);
     }
 }

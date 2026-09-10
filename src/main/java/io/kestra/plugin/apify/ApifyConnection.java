@@ -5,12 +5,20 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
+import com.apify.client.ApifyClient;
+import com.apify.client.ApifyClientBuilder;
+import com.apify.client.http.DefaultHttpTransport;
+import com.apify.client.http.HttpTransport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.kestra.core.exceptions.IllegalVariableEvaluationException;
@@ -193,6 +201,81 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
             .addHeader("Authorization", "Bearer " + apiTokenRendered)
             .addHeader("Content-Type", JSON_CONTENT_TYPE);
     }
+
+    /**
+     * Builds an SDK client. The integration header is re-added through a transport wrapper because the SDK has no
+     * header hook, and Apify uses it to attribute traffic to Kestra.
+     */
+    protected ApifyClient apifyClient(RunContext runContext) throws IllegalVariableEvaluationException {
+        String rApiToken = runContext.render(this.apiToken).as(String.class).orElseThrow(
+            () -> new IllegalArgumentException("Missing required apiToken field")
+        );
+
+        ApifyClientBuilder builder = ApifyClient.builder()
+            .token(rApiToken)
+            .baseUrl(sdkBaseUrl())
+            .httpTransport(new IntegrationHeaderTransport(new DefaultHttpTransport()));
+
+        if (this.options != null && this.options.getTimeout() != null) {
+            runContext.render(this.options.getTimeout().getReadIdleTimeout())
+                .as(Duration.class)
+                .ifPresent(builder::timeout);
+        }
+
+        return builder.build();
+    }
+
+    /** The SDK appends the /v2 API prefix itself, our own base URL already carries it. */
+    private static String sdkBaseUrl() {
+        String base = getBaseUrl();
+        return base.endsWith("/v2") ? base.substring(0, base.length() - 3) : base;
+    }
+
+    /** Stamps every SDK request with the integration header the raw HTTP path used to send. */
+    private record IntegrationHeaderTransport(HttpTransport delegate) implements HttpTransport {
+        @Override
+        public CompletableFuture<java.net.http.HttpResponse<byte[]>> sendAsync(java.net.http.HttpRequest request) {
+            return delegate.sendAsync(withHeader(request));
+        }
+
+        @Override
+        public CompletableFuture<java.net.http.HttpResponse<InputStream>> sendStreamingAsync(java.net.http.HttpRequest request) {
+            return delegate.sendStreamingAsync(withHeader(request));
+        }
+
+        private static java.net.http.HttpRequest withHeader(java.net.http.HttpRequest request) {
+            return java.net.http.HttpRequest.newBuilder(request, (name, value) -> true)
+                .header(INTEGRATION_HEADER, INTEGRATION_VALUE)
+                .build();
+        }
+    }
+
+    /**
+     * Re-reads an SDK model as one of our own so task outputs keep the exact shape they had before the SDK.
+     * The Instant serializer preserves millisecond precision, which the SDK's default drops.
+     */
+    protected static <T> T asPluginModel(Object sdkModel, Class<T> type) throws Exception {
+        return mapper.readValue(SDK_MAPPER.writeValueAsString(sdkModel), type);
+    }
+
+    private static final tools.jackson.databind.json.JsonMapper SDK_MAPPER = tools.jackson.databind.json.JsonMapper
+        .builder()
+        .addModule(
+            new tools.jackson.databind.module.SimpleModule().addSerializer(
+                Instant.class,
+                new tools.jackson.databind.ser.std.StdSerializer<Instant>(Instant.class) {
+                    @Override
+                    public void serialize(Instant value, tools.jackson.core.JsonGenerator gen, tools.jackson.databind.SerializationContext ctx) {
+                        gen.writeString(MILLIS_UTC.format(value));
+                    }
+                }
+            )
+        )
+        .build();
+
+    private static final DateTimeFormatter MILLIS_UTC = DateTimeFormatter
+        .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        .withZone(ZoneOffset.UTC);
 
     private String encodeValue(String value) {
         return URLEncoder.encode(value, StandardCharsets.UTF_8);

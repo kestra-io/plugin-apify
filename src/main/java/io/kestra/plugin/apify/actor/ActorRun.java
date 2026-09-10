@@ -3,16 +3,17 @@ package io.kestra.plugin.apify.actor;
 import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.kestra.core.models.tasks.Output;
 import io.kestra.plugin.apify.actor.pricinginfo.CommonActorPricingInfo;
-import io.swagger.v3.oas.annotations.media.Schema;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@JsonIgnoreProperties
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ActorRun extends ActorRunListItem implements Output {
     @Schema(title = "ID of the user that started the run")
     String userId;
@@ -33,6 +34,7 @@ public class ActorRun extends ActorRunListItem implements Output {
     String containerUrl;
 
     @Schema(title = "Whether the container HTTP server is ready")
+    @JsonAlias("containerServerReady")
     Boolean isContainerServerReady;
 
     @Schema(title = "Git branch the Actor build was made from")
