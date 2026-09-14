@@ -1,19 +1,11 @@
 package io.kestra.plugin.apify;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
 import io.kestra.core.junit.annotations.KestraTest;
 import io.kestra.core.models.property.Property;
@@ -23,6 +15,13 @@ import io.kestra.plugin.apify.actor.ActorRun;
 
 import jakarta.inject.Inject;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -42,52 +41,38 @@ class SdkTransportTest {
     @Inject
     private RunContextFactory runContextFactory;
 
-    private HttpServer server;
-    private final List<String> requests = new ArrayList<>();
-    private final Map<String, String> headers = new java.util.HashMap<>();
+    private WireMockServer server;
 
     @BeforeEach
-    void start() throws IOException {
-        requests.clear();
-        headers.clear();
-        server = HttpServer.create(new InetSocketAddress(0), 0);
-        server.createContext("/", exchange ->
-        {
-            requests.add(exchange.getRequestMethod() + " " + exchange.getRequestURI());
-            exchange.getRequestHeaders().forEach((n, v) -> headers.put(n.toLowerCase(), v.get(0)));
-            respond(exchange, RUN_JSON);
-        });
+    void start() {
+        server = new WireMockServer(WireMockConfiguration.options().dynamicPort());
         server.start();
-        System.setProperty("apify.api.base.url", "http://localhost:" + server.getAddress().getPort() + "/v2");
+        server.stubFor(post(urlPathEqualTo("/v2/actors/act1/runs")).willReturn(okJson(RUN_JSON)));
+        server.stubFor(get(urlPathEqualTo("/v2/actors/act1/runs/last")).willReturn(okJson(RUN_JSON)));
+        server.stubFor(post(urlPathEqualTo("/v2/actor-tasks/task1/runs")).willReturn(okJson(RUN_JSON)));
+
+        System.setProperty("apify.api.base.url", server.baseUrl() + "/v2");
     }
 
     @AfterEach
     void stop() {
-        server.stop(0);
+        server.stop();
         System.clearProperty("apify.api.base.url");
-    }
-
-    private static void respond(HttpExchange exchange, String body) throws IOException {
-        byte[] bytes = body.getBytes(StandardCharsets.UTF_8);
-        exchange.getResponseHeaders().add("Content-Type", "application/json");
-        exchange.sendResponseHeaders(200, bytes.length);
-        try (OutputStream out = exchange.getResponseBody()) {
-            out.write(bytes);
-        }
     }
 
     @Test
     void actorRunHitsTheRightEndpointAndKeepsItsOutputShape() throws Exception {
-        var task = io.kestra.plugin.apify.actor.Run.builder()
+        ActorRun out = io.kestra.plugin.apify.actor.Run.builder()
             .apiToken(Property.ofValue("t0ken"))
             .actorId(Property.ofValue("act1"))
-            .build();
+            .build()
+            .run(runContextFactory.of());
 
-        ActorRun out = task.run(runContextFactory.of());
-
-        assertThat(requests.getFirst(), containsString("POST /v2/actors/act1/runs"));
-        assertThat(headers.get("authorization"), is("Bearer t0ken"));
-        assertThat(headers.get("x-apify-integration-platform"), is("kestra"));
+        server.verify(
+            postRequestedFor(urlPathEqualTo("/v2/actors/act1/runs"))
+                .withHeader("Authorization", equalTo("Bearer t0ken"))
+                .withHeader("x-apify-integration-platform", equalTo("kestra"))
+        );
 
         assertThat(out, notNullValue());
         // the exact strings the raw HTTP implementation produced, including the coerced types
@@ -101,27 +86,25 @@ class SdkTransportTest {
 
     @Test
     void getLastRunHitsTheRightEndpoint() throws Exception {
-        var task = io.kestra.plugin.apify.dataset.GetLastRun.builder()
+        ActorRun out = io.kestra.plugin.apify.dataset.GetLastRun.builder()
             .apiToken(Property.ofValue("t0ken"))
             .actorId(Property.ofValue("act1"))
-            .build();
+            .build()
+            .run(runContextFactory.of());
 
-        ActorRun out = task.run(runContextFactory.of());
-
-        assertThat(requests.getFirst(), containsString("/v2/actors/act1/runs/last"));
+        server.verify(getRequestedFor(urlPathEqualTo("/v2/actors/act1/runs/last")));
         assertThat(out.getId(), is("run1"));
     }
 
     @Test
     void taskRunHitsTheRightEndpoint() throws Exception {
-        var task = io.kestra.plugin.apify.task.Run.builder()
+        ActorRun out = io.kestra.plugin.apify.task.Run.builder()
             .apiToken(Property.ofValue("t0ken"))
             .taskId(Property.ofValue("task1"))
-            .build();
+            .build()
+            .run(runContextFactory.of());
 
-        ActorRun out = task.run(runContextFactory.of());
-
-        assertThat(requests.getFirst(), containsString("POST /v2/actor-tasks/task1/runs"));
+        server.verify(postRequestedFor(urlPathEqualTo("/v2/actor-tasks/task1/runs")));
         assertThat(out.getId(), is("run1"));
     }
 }
