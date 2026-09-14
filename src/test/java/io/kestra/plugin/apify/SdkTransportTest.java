@@ -1,11 +1,11 @@
 package io.kestra.plugin.apify;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
-import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 
 import io.kestra.core.junit.annotations.KestraTest;
 import io.kestra.core.models.property.Property;
@@ -21,7 +21,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.okJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -29,7 +31,10 @@ import static org.hamcrest.Matchers.notNullValue;
 
 /** Exercises the real transport against a stub, which the pre-existing tests never did. */
 @KestraTest
+@WireMockTest(httpPort = SdkTransportTest.STUB_PORT)
 class SdkTransportTest {
+    static final int STUB_PORT = 28182;
+
     private static final String RUN_JSON = """
         {"data":{"id":"run1","actId":"act1","userId":"u1","status":"SUCCEEDED","statusMessage":"done",
          "startedAt":"2024-01-01T00:00:00.000Z","finishedAt":"2024-01-01T00:05:00.000Z",
@@ -38,25 +43,25 @@ class SdkTransportTest {
          "generalAccess":"FOLLOW_USER_SETTING","usageTotalUsd":0.031,"chargedEventCounts":{"page":3}}}
         """;
 
-    @RegisterExtension
-    static WireMockExtension wireMock = WireMockExtension.newInstance().build();
-
     @Inject
     private RunContextFactory runContextFactory;
 
-    @BeforeEach
-    void stubApi() {
-        wireMock.stubFor(post(urlPathEqualTo("/v2/actors/act1/runs")).willReturn(okJson(RUN_JSON)));
-        wireMock.stubFor(get(urlPathEqualTo("/v2/actors/act1/runs/last")).willReturn(okJson(RUN_JSON)));
-        wireMock.stubFor(post(urlPathEqualTo("/v2/actor-tasks/task1/runs")).willReturn(okJson(RUN_JSON)));
-
-        // the client reads its base URL once, and the extension picks a free port, so it is set per test
-        System.setProperty("apify.api.base.url", wireMock.baseUrl() + "/v2");
+    /** apify.api.base.url is the production override the client already reads, and the only seam for the stub. */
+    @BeforeAll
+    static void pointClientAtStub() {
+        System.setProperty("apify.api.base.url", "http://localhost:" + STUB_PORT + "/v2");
     }
 
-    @AfterEach
-    void clearBaseUrl() {
+    @AfterAll
+    static void clearBaseUrl() {
         System.clearProperty("apify.api.base.url");
+    }
+
+    @BeforeEach
+    void stubApi() {
+        stubFor(post(urlPathEqualTo("/v2/actors/act1/runs")).willReturn(okJson(RUN_JSON)));
+        stubFor(get(urlPathEqualTo("/v2/actors/act1/runs/last")).willReturn(okJson(RUN_JSON)));
+        stubFor(post(urlPathEqualTo("/v2/actor-tasks/task1/runs")).willReturn(okJson(RUN_JSON)));
     }
 
     @Test
@@ -67,7 +72,7 @@ class SdkTransportTest {
             .build()
             .run(runContextFactory.of());
 
-        wireMock.verify(
+        verify(
             postRequestedFor(urlPathEqualTo("/v2/actors/act1/runs"))
                 .withHeader("Authorization", equalTo("Bearer t0ken"))
                 .withHeader("x-apify-integration-platform", equalTo("kestra"))
@@ -91,7 +96,7 @@ class SdkTransportTest {
             .build()
             .run(runContextFactory.of());
 
-        wireMock.verify(getRequestedFor(urlPathEqualTo("/v2/actors/act1/runs/last")));
+        verify(getRequestedFor(urlPathEqualTo("/v2/actors/act1/runs/last")));
         assertThat(out.getId(), is("run1"));
     }
 
@@ -103,7 +108,7 @@ class SdkTransportTest {
             .build()
             .run(runContextFactory.of());
 
-        wireMock.verify(postRequestedFor(urlPathEqualTo("/v2/actor-tasks/task1/runs")));
+        verify(postRequestedFor(urlPathEqualTo("/v2/actor-tasks/task1/runs")));
         assertThat(out.getId(), is("run1"));
     }
 }
