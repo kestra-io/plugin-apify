@@ -61,7 +61,7 @@ public class GetLastRun extends ApifyConnection implements RunnableTask<ActorRun
             .lastRun((String) null)
             .get()
             .join()
-            .orElseThrow(() -> new IllegalStateException("Actor " + rActorId + " has no runs"));
+            .orElseThrow(() -> new IllegalStateException("Actor %s has no runs".formatted(rActorId)));
 
         return asPluginModel(lastRun, ActorRun.class);
     }
