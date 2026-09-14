@@ -137,20 +137,13 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
         Map<String, Object> rInput = runContext.render(this.input).asMap(String.class, Object.class);
 
         ActorStartOptions startOptions = new ActorStartOptions();
-        runContext.render(this.requestTimeout).as(Double.class)
-            .ifPresent(v -> startOptions.timeoutSecs(v.longValue()));
-        runContext.render(this.memory).as(MemoryMbytes.class).map(MemoryMbytes::getValue)
-            .ifPresent(v -> startOptions.memoryMbytes(((Number) v).longValue()));
-        runContext.render(this.maxItems).as(Integer.class)
-            .ifPresent(v -> startOptions.maxItems(v.longValue()));
-        runContext.render(this.maxTotalChargeUsd).as(Double.class)
-            .ifPresent(startOptions::maxTotalChargeUsd);
-        runContext.render(this.build).as(String.class)
-            .ifPresent(startOptions::build);
-        runContext.render(this.waitForFinish).as(Integer.class)
-            .ifPresent(v -> startOptions.waitForFinish(v.longValue()));
-        decodedWebhooks(runContext.render(this.webhooks).as(String.class).orElse(null))
-            .ifPresent(startOptions::webhooks);
+        runContext.render(this.requestTimeout).as(Double.class).ifPresent(v -> startOptions.timeoutSecs(v.longValue()));
+        runContext.render(this.memory).as(MemoryMbytes.class).map(MemoryMbytes::getValue).ifPresent(v -> startOptions.memoryMbytes(((Number) v).longValue()));
+        runContext.render(this.maxItems).as(Integer.class).ifPresent(v -> startOptions.maxItems(v.longValue()));
+        runContext.render(this.maxTotalChargeUsd).as(Double.class).ifPresent(startOptions::maxTotalChargeUsd);
+        runContext.render(this.build).as(String.class).ifPresent(startOptions::build);
+        runContext.render(this.waitForFinish).as(Integer.class).ifPresent(v -> startOptions.waitForFinish(v.longValue()));
+        decodedWebhooks(runContext.render(this.webhooks).as(String.class).orElse(null)).ifPresent(startOptions::webhooks);
 
         return asPluginModel(
             this.apifyClient(runContext).actor(rActorId).start(rInput, startOptions).join(),
