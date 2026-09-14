@@ -3,9 +3,9 @@ package io.kestra.plugin.apify;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 
 import io.kestra.core.junit.annotations.KestraTest;
 import io.kestra.core.models.property.Property;
@@ -38,25 +38,24 @@ class SdkTransportTest {
          "generalAccess":"FOLLOW_USER_SETTING","usageTotalUsd":0.031,"chargedEventCounts":{"page":3}}}
         """;
 
+    @RegisterExtension
+    static WireMockExtension wireMock = WireMockExtension.newInstance().build();
+
     @Inject
     private RunContextFactory runContextFactory;
 
-    private WireMockServer server;
-
     @BeforeEach
-    void start() {
-        server = new WireMockServer(WireMockConfiguration.options().dynamicPort());
-        server.start();
-        server.stubFor(post(urlPathEqualTo("/v2/actors/act1/runs")).willReturn(okJson(RUN_JSON)));
-        server.stubFor(get(urlPathEqualTo("/v2/actors/act1/runs/last")).willReturn(okJson(RUN_JSON)));
-        server.stubFor(post(urlPathEqualTo("/v2/actor-tasks/task1/runs")).willReturn(okJson(RUN_JSON)));
+    void stubApi() {
+        wireMock.stubFor(post(urlPathEqualTo("/v2/actors/act1/runs")).willReturn(okJson(RUN_JSON)));
+        wireMock.stubFor(get(urlPathEqualTo("/v2/actors/act1/runs/last")).willReturn(okJson(RUN_JSON)));
+        wireMock.stubFor(post(urlPathEqualTo("/v2/actor-tasks/task1/runs")).willReturn(okJson(RUN_JSON)));
 
-        System.setProperty("apify.api.base.url", server.baseUrl() + "/v2");
+        // the client reads its base URL once, and the extension picks a free port, so it is set per test
+        System.setProperty("apify.api.base.url", wireMock.baseUrl() + "/v2");
     }
 
     @AfterEach
-    void stop() {
-        server.stop();
+    void clearBaseUrl() {
         System.clearProperty("apify.api.base.url");
     }
 
@@ -68,7 +67,7 @@ class SdkTransportTest {
             .build()
             .run(runContextFactory.of());
 
-        server.verify(
+        wireMock.verify(
             postRequestedFor(urlPathEqualTo("/v2/actors/act1/runs"))
                 .withHeader("Authorization", equalTo("Bearer t0ken"))
                 .withHeader("x-apify-integration-platform", equalTo("kestra"))
@@ -92,7 +91,7 @@ class SdkTransportTest {
             .build()
             .run(runContextFactory.of());
 
-        server.verify(getRequestedFor(urlPathEqualTo("/v2/actors/act1/runs/last")));
+        wireMock.verify(getRequestedFor(urlPathEqualTo("/v2/actors/act1/runs/last")));
         assertThat(out.getId(), is("run1"));
     }
 
@@ -104,7 +103,7 @@ class SdkTransportTest {
             .build()
             .run(runContextFactory.of());
 
-        server.verify(postRequestedFor(urlPathEqualTo("/v2/actor-tasks/task1/runs")));
+        wireMock.verify(postRequestedFor(urlPathEqualTo("/v2/actor-tasks/task1/runs")));
         assertThat(out.getId(), is("run1"));
     }
 }
