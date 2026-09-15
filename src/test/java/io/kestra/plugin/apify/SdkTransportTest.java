@@ -28,6 +28,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** Exercises the real transport against a stub, which the pre-existing tests never did. */
 @KestraTest
@@ -110,5 +111,30 @@ class SdkTransportTest {
 
         verify(postRequestedFor(urlPathEqualTo("/v2/actor-tasks/task1/runs")));
         assertThat(out.getId(), is("run1"));
+    }
+
+    @Test
+    void reportsAnEmptyLastRunInsteadOfFailingOnNull() {
+        stubFor(get(urlPathEqualTo("/v2/actors/act1/runs/last")).willReturn(okJson("{\"data\":null}")));
+
+        var task = io.kestra.plugin.apify.dataset.GetLastRun.builder()
+            .apiToken(Property.ofValue("t0ken"))
+            .actorId(Property.ofValue("act1"))
+            .build();
+
+        var exception = assertThrows(IllegalStateException.class, () -> task.run(runContextFactory.of()));
+        assertThat(exception.getMessage(), containsString("act1"));
+    }
+
+    @Test
+    void namesTheWebhooksFieldWhenItIsNotValidBase64() {
+        var task = io.kestra.plugin.apify.actor.Run.builder()
+            .apiToken(Property.ofValue("t0ken"))
+            .actorId(Property.ofValue("act1"))
+            .webhooks(Property.ofValue("not-base64!!"))
+            .build();
+
+        var exception = assertThrows(IllegalArgumentException.class, () -> task.run(runContextFactory.of()));
+        assertThat(exception.getMessage(), containsString("webhooks"));
     }
 }

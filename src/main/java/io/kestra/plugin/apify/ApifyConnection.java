@@ -9,7 +9,10 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -19,6 +22,7 @@ import com.apify.client.ApifyClient;
 import com.apify.client.ApifyClientBuilder;
 import com.apify.client.http.DefaultHttpTransport;
 import com.apify.client.http.HttpTransport;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.kestra.core.exceptions.IllegalVariableEvaluationException;
@@ -58,9 +62,13 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
     protected static final String INTEGRATION_HEADER = "x-apify-integration-platform";
 
     @NotNull
+    @ToString.Exclude
     private Property<String> apiToken;
 
-    @Schema(title = "HTTP client options", description = "Optional HttpConfiguration applied to every Apify call, including timeouts, retries, and proxy settings.")
+    @Schema(
+        title = "HTTP client options",
+        description = "Optional HttpConfiguration applied to every Apify call. SDK-backed tasks honour `timeout.readIdleTimeout` only, the raw HTTP tasks honour the full configuration."
+    )
     HttpConfiguration options;
 
     protected static String getBaseUrl() {
@@ -279,5 +287,21 @@ public abstract class ApifyConnection extends Task implements ApifyConnectionInt
 
     private String encodeValue(String value) {
         return URLEncoder.encode(value, StandardCharsets.UTF_8);
+    }
+
+    /** Both run tasks take the same base64 payload, and a bad one has to name the field rather than leak a parse error. */
+    protected static Optional<List<Object>> decodedWebhooks(String encoded) {
+        if (encoded == null || encoded.isBlank()) {
+            return Optional.empty();
+        }
+
+        try {
+            return Optional.of(
+                mapper.readValue(Base64.getDecoder().decode(encoded), new TypeReference<>() {
+                })
+            );
+        } catch (IllegalArgumentException | java.io.IOException e) {
+            throw new IllegalArgumentException("webhooks is not valid base64 encoded JSON: %s".formatted(e.getMessage()), e);
+        }
     }
 }

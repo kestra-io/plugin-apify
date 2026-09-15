@@ -39,6 +39,9 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 configurations.all {
+    // the Apify client is on Jackson 3, which still uses the Jackson 2 annotations artifact and needs JsonApplyView
+    // from 2.22. The platform pins 2.21, and PluginClassLoader serves that package from Kestra, so without this the
+    // class is nowhere at runtime and the client throws NoClassDefFoundError on first call.
     resolutionStrategy.force 'com.fasterxml.jackson.core:jackson-annotations:2.22'
 }
 

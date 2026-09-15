@@ -1,12 +1,8 @@
 package io.kestra.plugin.apify.task;
 
-import java.util.Base64;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import com.apify.client.task.TaskStartOptions;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import io.kestra.core.models.annotations.Example;
 import io.kestra.core.models.annotations.Plugin;
@@ -155,13 +151,4 @@ public class Run extends ApifyConnection implements RunnableTask<ActorRun> {
         );
     }
 
-    /** `webhooks` is supplied Base64-encoded, the SDK takes the decoded list and encodes it again itself. */
-    private static Optional<List<Object>> decodedWebhooks(String encoded) throws Exception {
-        if (encoded == null || encoded.isBlank()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(mapper.readValue(Base64.getDecoder().decode(encoded), new TypeReference<List<Object>>() {
-        }));
-    }
 }

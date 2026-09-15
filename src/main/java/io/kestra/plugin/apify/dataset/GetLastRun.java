@@ -58,6 +58,7 @@ public class GetLastRun extends ApifyConnection implements RunnableTask<ActorRun
 
         var lastRun = this.apifyClient(runContext)
             .actor(rActorId)
+            // null status means the last run whatever its outcome, the cast picks the String overload
             .lastRun((String) null)
             .get()
             .join()
