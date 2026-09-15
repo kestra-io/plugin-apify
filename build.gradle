@@ -37,6 +37,13 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.add("-parameters")
 }
 
+configurations.all {
+    // the Apify client is on Jackson 3, which still uses the Jackson 2 annotations artifact and needs JsonApplyView
+    // from 2.22. The platform pins 2.21, and PluginClassLoader serves that package from Kestra, so without this the
+    // class is nowhere at runtime and the client throws NoClassDefFoundError on first call.
+    resolutionStrategy.force 'com.fasterxml.jackson.core:jackson-annotations:2.22'
+}
+
 dependencies {
     // Platform
     annotationProcessor enforcedPlatform("io.kestra:platform:$kestraVersion")
@@ -50,6 +57,9 @@ dependencies {
     annotationProcessor group: "io.kestra", name: "processor", version: kestraVersion
     compileOnly group: "io.kestra", name: "core", version: kestraVersion
     compileOnly group: "io.kestra", name: "script", version: kestraVersion
+
+    // Apify's official Java client. Brings Jackson 3 (tools.jackson), which coexists with Kestra's Jackson 2.
+    implementation group: 'com.apify', name: 'apify-client', version: '0.6.3'
 }
 
 
@@ -88,6 +98,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-engine"
     testImplementation "org.hamcrest:hamcrest"
     testImplementation "org.hamcrest:hamcrest-library"
+    testImplementation "org.wiremock:wiremock-jetty12"
 }
 
 /**********************************************************************************************************************\

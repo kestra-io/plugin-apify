@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-@JsonIgnoreProperties
+@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class ActorRunListItem {
     @Schema(title = "Run ID")
     private String id;

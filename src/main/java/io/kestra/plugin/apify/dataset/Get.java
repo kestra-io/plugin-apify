@@ -86,8 +86,6 @@ public class Get extends AbstractGetDataset implements RunnableTask<Get.Output> 
     }
 
     public record Output(
-        @Schema(title = "Items fetched from the Apify dataset")
-        List<?> dataset
-    ) implements io.kestra.core.models.tasks.Output {
+        @Schema(title = "Items fetched from the Apify dataset") List<?> dataset) implements io.kestra.core.models.tasks.Output {
     }
 }
