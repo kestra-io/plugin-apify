@@ -59,7 +59,7 @@ dependencies {
     compileOnly group: "io.kestra", name: "script", version: kestraVersion
 
     // Apify's official Java client. Brings Jackson 3 (tools.jackson), which coexists with Kestra's Jackson 2.
-    implementation group: 'com.apify', name: 'apify-client', version: '0.8.0'
+    implementation group: 'com.apify', name: 'apify-client', version: '0.10.0'
 }
 
 
