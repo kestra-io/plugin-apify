@@ -42,6 +42,11 @@ configurations.all {
     // from 2.22. The platform pins 2.21, and PluginClassLoader serves that package from Kestra, so without this the
     // class is nowhere at runtime and the client throws NoClassDefFoundError on first call.
     resolutionStrategy.force 'com.fasterxml.jackson.core:jackson-annotations:2.22'
+
+    // Security pin for tools.jackson 3.x (databind and core), brought in by the Apify client at 3.2.1.
+    // Can be removed once the client or the platform bumps it to 3.2.3 or later.
+    resolutionStrategy.force 'tools.jackson.core:jackson-databind:3.2.3'
+    resolutionStrategy.force 'tools.jackson.core:jackson-core:3.2.3'
 }
 
 dependencies {
