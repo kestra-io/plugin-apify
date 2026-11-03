@@ -47,6 +47,11 @@ configurations.all {
     // Can be removed once the client or the platform bumps it to 3.2.3 or later.
     resolutionStrategy.force 'tools.jackson.core:jackson-databind:3.2.3'
     resolutionStrategy.force 'tools.jackson.core:jackson-core:3.2.3'
+
+    // Security pin for Jackson 2 (databind and core). The Kestra platform BOM still pins 2.21.1; 2.21.7 fixes the advisories.
+    // Can be removed once the platform bumps Jackson. A strict constraint fails under enforcedPlatform, hence force.
+    resolutionStrategy.force 'com.fasterxml.jackson.core:jackson-databind:2.21.7'
+    resolutionStrategy.force 'com.fasterxml.jackson.core:jackson-core:2.21.7'
 }
 
 dependencies {
